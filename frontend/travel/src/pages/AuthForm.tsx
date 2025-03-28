@@ -27,8 +27,7 @@ const AuthForm: React.FC = () => {
             const token = response.data.token;
             localStorage.setItem('token', token);
             console.log('ログイン成功', token);
-
-            navigate('/home');
+            navigate('/loading');
         } catch (error: any) {
             console.error('ログイン失敗', error);
         }
@@ -78,7 +77,7 @@ const AuthForm: React.FC = () => {
 
 
     return (
-        <div className="background-color">
+        <div className="auth-form-wrapper">
             <div className={`container ${isSignUp ? 'right-panel-active' : ''}`} id="container">
                 <div className="form-container sign-up-container">
                     <form onSubmit={handleSignUp}>

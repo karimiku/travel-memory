@@ -1,28 +1,20 @@
-// src/pages/oauth2/redirect.tsx
-
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const OAuth2Redirect = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search)
-        const token = urlParams.get('token')
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
 
         if (token) {
-            localStorage.setItem('token', token) // トークンを保存
-            setTimeout(() => {
-                navigate('/home') // ログイン後の画面へ遷移
-            }, 1000)
-
-        } else {
-            // トークンがない場合はログイン画面に戻す
-            navigate('/login')
+            localStorage.setItem('token', token);
+            navigate('/loading'); // loading.tsx 側に任せる
         }
-    }, [navigate])
+    }, [navigate]);
 
-    return <p>ログイン処理中です...</p>
-}
+    return null;
+};
 
-export default OAuth2Redirect
+export default OAuth2Redirect;

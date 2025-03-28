@@ -5,7 +5,6 @@
 }
 
 body {
-    background: url('../../public/background.jpg') no-repeat center center fixed;
     background-size: cover;
     font-family: 'Montserrat', sans-serif;
     height: 100vh;
@@ -13,6 +12,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.auth-form-wrapper {
+    background: url('../../public/background.jpg') no-repeat center center fixed;
+    border-radius: 20px;
+
+
 }
 
 .container {
@@ -89,6 +95,7 @@ input {
     padding: 12px 15px;
     margin: 8px 0;
     width: 100%;
+    border-radius: 20px;
 }
 
 button {

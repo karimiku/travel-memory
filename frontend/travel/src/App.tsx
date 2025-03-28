@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AuthForm from './pages/AuthForm';
 import Home from './pages/Home';
+import Loading from './pages/Loading';
 import OAuth2Redirect from './pages/oauth2/redirect';
 import { JSX } from 'react';
 
@@ -25,6 +26,8 @@ const App: React.FC = () => {
 
         {/* その他はすべてルートへ */}
         <Route path="*" element={<Navigate to="/" replace />} />
+        {/* ローディング画面 */}
+        <Route path="/loading" element={<Loading />} />
       </Routes>
     </Router>
   );
