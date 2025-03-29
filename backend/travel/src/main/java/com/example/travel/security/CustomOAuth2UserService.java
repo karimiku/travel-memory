@@ -10,8 +10,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.example.travel.entity.AppUser;
 import com.example.travel.entity.AuthProvider;
-import com.example.travel.entity.Users;
 import com.example.travel.repository.UsersRepository;
 
 @Service
@@ -27,11 +27,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String username = oAuth2User.getAttribute("name");
 
-        Optional<Users> userOptional = usersRepository.findByEmail(email);
-        Users user = userOptional.orElse(null);
+        Optional<AppUser> userOptional = usersRepository.findByEmail(email);
+        AppUser user = userOptional.orElse(null);
 
         if (user == null) {
-            Users newUser = new Users();
+            AppUser newUser = new AppUser();
             newUser.setEmail(email);
             newUser.setUsername(username != null ? username : "user_" + UUID.randomUUID().toString().substring(0, 8));
             newUser.setPassword(null); // Googleログインにはパスワード不要

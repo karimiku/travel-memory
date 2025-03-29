@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.travel.dto.LoginRequest;
 import com.example.travel.dto.LoginResponse;
 import com.example.travel.dto.RegisterRequest;
+import com.example.travel.entity.AppUser;
 import com.example.travel.entity.AuthProvider;
-import com.example.travel.entity.Users;
 import com.example.travel.repository.UsersRepository;
 import com.example.travel.security.JWTUtil;
 
@@ -44,7 +44,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("このアドレスはすでに使用されています。");
         }
 
-        Users newUser = new Users();
+        AppUser newUser = new AppUser();
         newUser.setEmail(registerRequest.getEmail());
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         newUser.setAuthProvider(AuthProvider.LOCAL); // 追加！
