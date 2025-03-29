@@ -100,8 +100,8 @@ input {
 
 button {
     border-radius: 20px;
-    border: 1px solid #FF4B2B;
-    background-color: #FF4B2B;
+    border: 1px solid #F2DEC4;
+    background-color: #eebd7d;
     color: #FFFFFF;
     font-size: 12px;
     font-weight: bold;
@@ -155,7 +155,7 @@ span {
 }
 
 .overlay {
-    background: linear-gradient(to right, rgba(255, 75, 43, 0.6), rgba(255, 65, 108, 0.6));
+    background: linear-gradient(to right, #fdc67e, #fdc67e);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     background-size: cover;
