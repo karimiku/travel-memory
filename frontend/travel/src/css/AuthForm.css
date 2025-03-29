@@ -17,15 +17,13 @@ body {
 .auth-form-wrapper {
     background: url('../../public/background.jpg') no-repeat center center fixed;
     border-radius: 20px;
-
-
 }
 
 .container {
     background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 10px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     overflow: hidden;
     width: 768px;
@@ -77,9 +75,8 @@ body {
 
 form {
     background-color: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 10px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: flex;
     flex-direction: column;
     padding: 0 50px;
