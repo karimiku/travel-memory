@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.travel.entity.AppUser;
 import com.example.travel.entity.AuthProvider;
-import com.example.travel.repository.UsersRepository;
+import com.example.travel.repository.UserRepository;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository userRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -27,7 +27,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String username = oAuth2User.getAttribute("name");
 
-        Optional<AppUser> userOptional = usersRepository.findByEmail(email);
+        Optional<AppUser> userOptional = userRepository.findByEmail(email);
         AppUser user = userOptional.orElse(null);
 
         if (user == null) {
@@ -36,7 +36,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setUsername(username != null ? username : "user_" + UUID.randomUUID().toString().substring(0, 8));
             newUser.setPassword(null); // Googleログインにはパスワード不要
             newUser.setAuthProvider(AuthProvider.GOOGLE);
-            usersRepository.save(newUser);
+            userRepository.save(newUser);
         }
 
         return oAuth2User;

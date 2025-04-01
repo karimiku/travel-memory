@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AuthForm from './pages/AuthForm';
-import Home from './pages/Home';
 import Loading from './pages/Loading';
 import OAuth2Redirect from './pages/oauth2/redirect';
 import { JSX } from 'react';
+import Main from './pages/Main';
 
 // PrivateRoute コンポーネント（トークンがなければリダイレクト）
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
@@ -22,7 +22,7 @@ const App: React.FC = () => {
         <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
 
         {/* ログイン後の画面 */}
-        <Route path="/home" element={<PrivateRoute element={<Home />} />} />
+        <Route path="/main" element={<PrivateRoute element={<Main />} />} />
 
         {/* その他はすべてルートへ */}
         <Route path="*" element={<Navigate to="/" replace />} />

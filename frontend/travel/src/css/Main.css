@@ -1,0 +1,70 @@
+.main-container {
+    display: flex;
+    padding: 20px;
+}
+
+.left-section {
+    width: 30%;
+    padding-right: 20px;
+    border-right: 1px solid #ddd;
+}
+
+.right-section {
+    width: 70%;
+    padding-left: 20px;
+}
+
+.create-button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.memory-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.memory-form input,
+.memory-form textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.memory-form button {
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.memory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.memory-card {
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.image-gallery {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.image-gallery img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+}

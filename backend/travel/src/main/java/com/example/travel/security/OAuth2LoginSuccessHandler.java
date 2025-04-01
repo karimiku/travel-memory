@@ -24,9 +24,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
+        
 
-        String username = authentication.getName(); // 通常は email か username
-        String token = jwtUtil.generateToken(username);
+        var oAuth2User = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
+        String email = oAuth2User.getAttribute("email");
+
+        String token = jwtUtil.generateToken(email);
+        System.out.println("email from OAuth2: " + email);
 
         response.sendRedirect("http://localhost:5173/oauth2/redirect?token=" + token);
     }

@@ -3,10 +3,7 @@ import '../css/AuthForm.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import GoogleLoginButton from '../component/GoogleLoginButton';
-
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.withCredentials = true;
-axios.defaults.headers.common['Content-Type'] = 'application/json';
+import axiosClient from '../lib/axiosClient';
 
 const AuthForm: React.FC = () => {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -19,7 +16,7 @@ const AuthForm: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axios.post('/login', {
+            const response = await axiosClient.post('/login', {
                 email: loginEmail,
                 password: loginPassword,
             });
@@ -37,7 +34,7 @@ const AuthForm: React.FC = () => {
         e.preventDefault();
         try {
             // baseURLを考慮してエンドポイントを調整
-            const response = await axios.post('/signup', {
+            const response = await axiosClient.post('/signup', {
                 email: signupEmail,
                 password: signupPassword
             }, {

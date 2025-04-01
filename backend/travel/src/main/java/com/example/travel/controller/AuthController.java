@@ -18,7 +18,7 @@ import com.example.travel.dto.LoginResponse;
 import com.example.travel.dto.RegisterRequest;
 import com.example.travel.entity.AppUser;
 import com.example.travel.entity.AuthProvider;
-import com.example.travel.repository.UsersRepository;
+import com.example.travel.repository.UserRepository;
 import com.example.travel.security.JWTUtil;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -27,7 +27,7 @@ import com.example.travel.security.JWTUtil;
 public class AuthController {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository usersRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
