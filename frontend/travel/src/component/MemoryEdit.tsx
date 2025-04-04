@@ -1,4 +1,3 @@
-// components/MemoryEdit.tsx
 import { useEffect, useState } from 'react';
 import axiosClient from '../lib/axiosClient';
 import '../css/MemoryEdit.css';
@@ -23,32 +22,58 @@ const MemoryEdit = ({ memory, onCancel, onUpdated }: Props) => {
     const [prefecture, setPrefecture] = useState(memory.prefecture);
     const [date, setDate] = useState(memory.date);
     const [description, setDescription] = useState(memory.description);
+    const [files, setFiles] = useState<File[]>([]);
 
     useEffect(() => {
         setTitle(memory.title);
         setPrefecture(memory.prefecture);
         setDate(memory.date);
         setDescription(memory.description);
-    }
-    )
+    }, [memory]);
 
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+
+        // ① テキスト部分の更新（PUT）
         try {
-            await axiosClient.put(`/api/memories/${memory.id}`, {
+            await axiosClient.put(`/auth/api/memories/${memory.id}`, {
                 title,
                 prefecture,
                 date,
                 description,
-                imageUrls: memory.imageUrls
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
             });
-
-            alert('思い出を更新しました！');
-            onUpdated();
         } catch (error) {
-            console.error('更新に失敗しました:', error);
-            alert('更新に失敗しました。');
+            console.error('基本情報の更新に失敗しました:', error);
+            alert('情報の更新に失敗しました。');
+            return;
         }
+
+        // ② 画像の追加（POST）
+        if (files.length > 0) {
+            const formData = new FormData();
+            files.forEach((file) => formData.append('images', file));
+
+            try {
+                await axiosClient.post(`/auth/api/memories/${memory.id}/images`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    }
+                });
+            } catch (error) {
+                console.error('画像の追加に失敗しました:', error);
+                alert('画像の追加に失敗しました。');
+                return;
+            }
+        }
+
+        alert('思い出を更新しました！');
+        onUpdated();
     };
 
     return (
@@ -88,6 +113,17 @@ const MemoryEdit = ({ memory, onCancel, onUpdated }: Props) => {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="説明"
                 rows={5}
+            />
+
+            <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => {
+                    if (e.target.files) {
+                        setFiles(Array.from(e.target.files));
+                    }
+                }}
             />
 
             <div className="form-edit-buttons">

@@ -33,7 +33,7 @@ const MemoryList = () => {
         const fetchMemories = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axiosClient.get('/api/memories', {
+                const response = await axiosClient.get('/auth/api/memories', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

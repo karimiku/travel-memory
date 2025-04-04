@@ -8,28 +8,31 @@ const MemoryCreate = () => {
     const [prefecture, setPrefecture] = useState('');
     const [date, setDate] = useState('');
     const [description, setDescription] = useState('');
-    const [imageUrls, setImageUrls] = useState(['']);
+    const [files, setFiles] = useState<File[]>([]);
     const [showToast, setShowToast] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const token = localStorage.getItem('token');
-            await axiosClient.post(
-                '/api/memories',
-                { title, prefecture, date, description, imageUrls },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setTitle('');
-            setPrefecture('');
-            setDate('');
-            setDescription('');
-            setImageUrls(['']);
+        const token = localStorage.getItem('token');
 
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('prefecture', prefecture);
+        formData.append('date', date);
+        formData.append('description', description);
+
+        files.forEach((file) => {
+            formData.append('images', file);
+        });
+        try {
+
+            await axiosClient.post(
+                '/auth/api/memories', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);
         } catch (err) {
@@ -114,10 +117,15 @@ const MemoryCreate = () => {
                     required
                 />
                 <input
-                    type="text"
-                    placeholder="画像URL (カンマ区切り可)"
-                    value={imageUrls.join(',')}
-                    onChange={(e) => setImageUrls(e.target.value.split(','))}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => {
+                        if (e.target.files) {
+                            setFiles(Array.from(e.target.files));
+                        }
+                    }}
+
                 />
                 <button type="submit">登録する</button>
             </form>

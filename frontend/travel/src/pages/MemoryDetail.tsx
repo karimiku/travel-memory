@@ -1,12 +1,11 @@
+// ✅ MemoryDetail.tsx（修正版）
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosClient from '../lib/axiosClient';
 import Header from '../component/Header';
 import MemoryList from '../component/MemoryList';
 import MemoryEdit from '../component/MemoryEdit';
-import mapImage from '../../public/map.gif';
 import '../css/MemoryDetail.css';
-
 
 type Memory = {
     id: number;
@@ -22,48 +21,51 @@ const MemoryDetail = () => {
     const navigate = useNavigate();
 
     const [memory, setMemory] = useState<Memory | null>(null);
+    const [imageBlobs, setImageBlobs] = useState<string[]>([]);
     const [isEditing, setIsEditing] = useState(false);
 
+    const fetchMemoryWithImages = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axiosClient.get(`/auth/api/memories/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setMemory(response.data);
+
+            const blobs = await Promise.all(
+                response.data.imageUrls.map(async (url: string) => {
+                    const filename = url.split('/').pop();
+                    const imageRes = await axiosClient.get(
+                        `/auth/api/memories/${id}/images/${filename}`,
+                        {
+                            responseType: 'blob',
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+                    return URL.createObjectURL(imageRes.data);
+                })
+            );
+            setImageBlobs(blobs);
+        } catch (error) {
+            console.error('データの取得に失敗:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchMemory = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axiosClient.get(`/api/memories/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setMemory(response.data);
-            } catch (error) {
-                console.error('詳細の取得に失敗:', error);
-            }
-        };
-        fetchMemory();
+        fetchMemoryWithImages();
     }, [id]);
 
     const handleEditToggle = () => setIsEditing(true);
-
     const handleUpdated = () => {
         setIsEditing(false);
-        // 最新情報を再取得
-        const fetchMemory = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axiosClient.get(`/api/memories/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setMemory(response.data);
-            } catch (error) {
-                console.error('更新後の取得に失敗:', error);
-            }
-        };
-        fetchMemory();
+        fetchMemoryWithImages();
     };
 
     const handleDelete = async () => {
         if (!window.confirm('本当に削除しますか？')) return;
-
         try {
             const token = localStorage.getItem('token');
-            await axiosClient.delete(`/api/memories/${id}`, {
+            await axiosClient.delete(`/auth/api/memories/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             navigate('/main');
@@ -80,7 +82,7 @@ const MemoryDetail = () => {
             <MemoryList />
             <div className="memory-detail-container">
                 <div className="memory-detail-body">
-                    {/* 左カラム */}
+                    {/* ✅ 左カラム */}
                     <div className="memory-left">
                         {isEditing ? (
                             <MemoryEdit
@@ -101,21 +103,24 @@ const MemoryDetail = () => {
                         )}
                     </div>
 
-                    {/* 右カラム */}
+                    {/* ✅ 右カラム */}
                     <div className="memory-right">
-                        <div className="memory-comment">
-                            写真に対するコメント（今後追加予定）
-                        </div>
                         <div className="photo-wrapper">
-                            {memory.imageUrls.map((url, index) => (
-                                <img
-                                    key={index}
-                                    src={url || mapImage}
-                                    alt={`memory-${index}`}
-                                    className="memory-image"
-                                />
+                            {imageBlobs.map((blobUrl, index) => (
+                                <div className="photo-block" key={index}>
+                                    <div className="memory-comment">
+                                        写真に対するコメント（今後追加予定）
+                                    </div>
+                                    <div className="image-and-button">
+                                        <button className="comment-add-button">コメント追加</button>
+                                        <img
+                                            src={blobUrl}
+                                            alt={`memory-${index}`}
+                                            className="memory-image"
+                                        />
+                                    </div>
+                                </div>
                             ))}
-                            <button className="comment-add-button">コメント追加</button>
                         </div>
                     </div>
                 </div>

@@ -20,7 +20,7 @@ const AuthForm: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axiosClient.post('/login', {
+            const response = await axiosClient.post('/auth/login', {
                 email: loginEmail,
                 password: loginPassword,
             });
