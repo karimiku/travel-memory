@@ -58,7 +58,7 @@ public class MemoryService {
 
     public List<MemoryResponse> getAllMemoriesForUser() {
         AppUser user = getAuthenticatedUser();
-        List<Memory> memories = memoryRepository.findByUserUserId(user.getUserId());
+        List<Memory> memories = memoryRepository.findAllWithImagesByUserId(user.getId());
         return memories.stream().map(memory -> {
             MemoryResponse res = new MemoryResponse();
             res.setId(memory.getId());
@@ -73,6 +73,27 @@ public class MemoryService {
             );
             return res;
         }).toList();
+
+    }
+
+    public MemoryResponse updateMemory(Long memoryId, MemoryRequest dto){
+        AppUser user = getAuthenticatedUser();
+        Memory memory = memoryRepository.findById(memoryId)
+                .orElseThrow(() -> new RuntimeException("指定されたIDのMemoryが見つかりません"));
+
+        if(!memory.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("この思い出を編集する権限がありません");
+        }
+
+        memory.setTitle(dto.getTitle());
+        memory.setPrefecture(dto.getPrefecture());
+        memory.setDate(dto.getDate());
+        memory.setDescription(dto.getDescription());
+
+        Memory updatedMemory = memoryRepository.save(memory);
+
+        return MemoryResponse.fromEntity(updatedMemory);
+
 
     }
 
@@ -92,6 +113,23 @@ public class MemoryService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません"));
         
+    }
+
+    public MemoryResponse getMemoryById(Long id) {
+        Memory memory = memoryRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("指定された思い出が見つかりません"));
+        
+        return MemoryResponse.fromEntity(memory);
+    }
+
+    public void deleteMemoryById(Long id) {
+        Memory memory = memoryRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("指定された思い出が見つかりません"));
+        List<MemoryImage> images = memory.getImages();
+        for (MemoryImage image : images) {
+            memoryImageRepository.deleteById(image.getId());
+        }
+        memoryRepository.deleteById(id);
     }
 }
 

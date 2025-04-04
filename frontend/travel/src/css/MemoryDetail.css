@@ -1,0 +1,161 @@
+.memory-detail-container {
+    background-color: #fef4dc;
+    padding: 32px;
+    min-height: 100vh;
+    width: 1200px;
+    border-radius: 16px;
+}
+
+.memory-detail-body {
+    display: flex;
+    max-width: 1300px;
+    height: 700px;
+    margin: 0 auto;
+    background-color: #fffdf8;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* 左カラム */
+.memory-left {
+    flex: 1;
+    padding: 32px;
+    background-color: #fffef9;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 16px 0 0 16px;
+}
+
+.memory-left h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.memory-left p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 12px;
+}
+
+.memory-left input,
+.memory-left textarea {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    background-color: #fffaf0;
+    margin-bottom: 16px;
+}
+
+.memory-left input:focus,
+.memory-left textarea:focus {
+    outline: none;
+    border-color: #ffa07a;
+}
+
+.memory-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.memory-buttons button {
+    background-color: #c6e2ff;
+    color: #333;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.memory-buttons button:hover {
+    background-color: #a5d2ff;
+}
+
+/* 右カラム */
+.memory-right {
+    flex: 1;
+    padding: 24px;
+    background-color: #f4f9ff;
+    overflow-y: auto;
+    border-radius: 0 16px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.memory-comment {
+    background-color: #d4eaff;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    color: #333;
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.memory-comment:before,
+.memory-comment:after {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #d4eaff;
+    content: "";
+}
+
+.memory-comment:before {
+    top: 110%;
+    left: 40px;
+    height: 15px;
+    width: 15px;
+}
+
+.memory-comment:after {
+    top: 150%;
+    left: 50px;
+    height: 10px;
+    width: 10px;
+}
+
+/* 🔄 写真とボタンの横並び */
+.photo-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.memory-image {
+    width: 100%;
+    max-width: 400px;
+    max-height: 240px;
+    object-fit: contain;
+    border-radius: 12px;
+    background-color: #eaf6ff;
+    border: 1px solid #ccc;
+}
+
+.comment-add-button {
+    background-color: #b5dcff;
+    border: none;
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    height: 40px;
+    white-space: nowrap;
+}
+
+.comment-add-button:hover {
+    background-color: #98ccff;
+}

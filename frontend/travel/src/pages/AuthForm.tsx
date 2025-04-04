@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/AuthForm.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,10 @@ const AuthForm: React.FC = () => {
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.body.id = 'auth';
+    }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -95,7 +99,7 @@ const AuthForm: React.FC = () => {
                             required
                         />
 
-                        <button type="submit">サインアップ</button>
+                        <button className="auth" type="submit">サインアップ</button>
                         <GoogleLoginButton />
                     </form>
                 </div>

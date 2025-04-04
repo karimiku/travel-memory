@@ -9,14 +9,15 @@ body {
     font-family: 'Montserrat', sans-serif;
     height: 100vh;
     margin: 0;
-    display: flex;
     justify-content: center;
     align-items: center;
+    display: flex;
 }
 
 .auth-form-wrapper {
     background: url('../../public/background.jpg') no-repeat center center fixed;
     border-radius: 20px;
+
 }
 
 .container {

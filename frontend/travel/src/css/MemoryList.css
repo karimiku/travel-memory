@@ -1,37 +1,27 @@
-body#main {
-    height: 100vh;
-    margin: 0;
-}
-
-.main-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #F2DEC4;
-}
-
-/* 横カルーセルをページ上部に */
 .memory-carousel-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     padding: 16px 0;
+    position: relative;
+    width: 100%;
 }
 
-/* カード横スクロール領域 */
 .memory-carousel {
     display: flex;
     overflow-x: auto;
     scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
     gap: 16px;
     padding: 8px;
     width: 50vw;
-    /* ← 画面中央半分 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-/* カード */
+.memory-carousel::-webkit-scrollbar {
+    display: none;
+}
+
 .memory-card {
     flex: 0 0 auto;
     scroll-snap-align: start;
@@ -44,7 +34,6 @@ body#main {
     overflow: hidden;
 }
 
-/* ボタン部分 */
 .memory-card-button {
     all: unset;
     display: flex;
@@ -81,7 +70,7 @@ body#main {
     text-overflow: ellipsis;
 }
 
-/* スクロール矢印ボタン */
+/* ✅ 修正済みスクロールボタン */
 .scroll-button {
     position: absolute;
     top: 50%;
@@ -96,35 +85,12 @@ body#main {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* ← ボタンを内側に寄せる */
 .scroll-button.left {
-    left: 0;
+    margin-left: 80px;
 }
 
+/* → ボタンを内側に寄せる */
 .scroll-button.right {
-    right: 0;
-}
-
-/* 地図側 */
-.main-content {
-    display: flex;
-    flex: 1;
-    height: calc(100vh - 120px);
-    width: 1200px;
-}
-
-.map-section {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 16px;
-    position: relative;
-}
-
-.map-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 12px;
+    margin-right: 80px;
 }

@@ -16,6 +16,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.0",
+    "react-zoom-pan-pinch": "^3.7.0",
     "scss": "^0.2.4"
   },
   "devDependencies": {
