@@ -1,5 +1,3 @@
 package com.example.travel.controller;
 
-public record ContentDto (String content){
-
-}
+public record ContentDto(String content) {}

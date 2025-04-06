@@ -1,14 +1,19 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import AuthForm from './pages/AuthForm';
-import Loading from './pages/Loading';
-import OAuth2Redirect from './pages/oauth2/redirect';
-import MemoryDetail from './pages/MemoryDetail';
-import { JSX } from 'react';
-import Main from './pages/Main';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import AuthForm from "./pages/AuthForm";
+import Loading from "./pages/Loading";
+import OAuth2Redirect from "./pages/oauth2/redirect";
+import MemoryDetail from "./pages/MemoryDetail";
+import { JSX } from "react";
+import Main from "./pages/Main";
 
 // PrivateRoute コンポーネント（トークンがなければリダイレクト）
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return token ? element : <Navigate to="/" replace />;
 };
 

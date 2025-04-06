@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.travel.dto.MemoryImageCommentRequest;
 import com.example.travel.dto.MemoryRequest;
 import com.example.travel.dto.MemoryResponse;
 import com.example.travel.service.MemoryService;
@@ -27,69 +28,94 @@ import com.example.travel.service.MemoryService;
 @RequestMapping("/auth/api/memories")
 public class MemoryController {
 
-    @Autowired
-    private MemoryService memoryService;
+  private final MemoryService memoryService;
 
-    // ✅ 思い出作成（画像付き）
-    @PostMapping
-    public ResponseEntity<?> createMemory(
-            @RequestParam("title") String title,
-            @RequestParam("prefecture") String prefecture,
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam("description") String description,
-            @RequestParam(value = "images", required = false) List<MultipartFile> images
-    ) {
-        memoryService.createMemoryWithImages(title, prefecture, date, description, images);
-        return ResponseEntity.ok("思い出が保存されました！");
-    }
+  @Autowired
+  public MemoryController(MemoryService memoryService) {
+    this.memoryService = memoryService;
+  }
 
-    // ✅ ユーザーの思い出一覧取得
-    @GetMapping
-    public ResponseEntity<List<MemoryResponse>> getUserAllMemories() {
-        List<MemoryResponse> memories = memoryService.getAllMemoriesForUser();
-        return ResponseEntity.ok(memories);
-    }
+  // ✅ ユーザーの思い出一覧取得
+  @GetMapping
+  public ResponseEntity<List<MemoryResponse>> getUserAllMemories() {
+    return ResponseEntity.ok(memoryService.getAllMemoriesForUser());
+  }
 
-    // ✅ 思い出更新（画像除く）
-    @PutMapping("/{id}")
-    public ResponseEntity<MemoryResponse> updateMemory(@PathVariable("id") Long memoryId, @RequestBody MemoryRequest dto) {
-        MemoryResponse updatedMemory = memoryService.updateMemory(memoryId, dto);
-        return ResponseEntity.ok(updatedMemory);
-    }
+  // ✅ 思い出作成（画像付き）
+  @PostMapping
+  public ResponseEntity<String> createMemory(
+    @RequestParam("title") String title,
+    @RequestParam("prefecture") String prefecture,
+    @RequestParam("date") @DateTimeFormat(
+      iso = DateTimeFormat.ISO.DATE
+    ) LocalDate date,
+    @RequestParam("description") String description,
+    @RequestParam(value = "images", required = false) List<MultipartFile> images
+  ) {
+    memoryService.createMemoryWithImages(
+      title,
+      prefecture,
+      date,
+      description,
+      images
+    );
+    return ResponseEntity.ok("思い出が保存されました！");
+  }
 
-    // ✅ 特定の思い出取得
-    @GetMapping("/{id}")
-    public ResponseEntity<MemoryResponse> getMemoryById(@PathVariable Long id) {
-        MemoryResponse memory = memoryService.getMemoryById(id);
-        return ResponseEntity.ok(memory);
-    }
+  // ✅ 特定の思い出取得
+  @GetMapping("/{id}")
+  public ResponseEntity<MemoryResponse> getMemoryById(@PathVariable Long id) {
+    return ResponseEntity.ok(memoryService.getMemoryById(id));
+  }
 
-    // ✅ 特定の思い出の画像取得
-    @GetMapping("/{id}/images/{filename}")
-    public ResponseEntity<Resource> getMemoryImage(
-        @PathVariable Long id,
-        @PathVariable String filename
-) {
+  // ✅ 思い出更新（画像除く）
+  @PutMapping("/{id}")
+  public ResponseEntity<MemoryResponse> updateMemory(
+    @PathVariable Long id,
+    @RequestBody MemoryRequest dto
+  ) {
+    return ResponseEntity.ok(memoryService.updateMemory(id, dto));
+  }
+
+  // ✅ 特定の思い出の画像取得
+  @GetMapping("/{id}/images/{filename}")
+  public ResponseEntity<Resource> getMemoryImage(
+    @PathVariable Long id,
+    @PathVariable String filename
+  ) {
     Resource image = memoryService.getMemoryImage(id, filename);
     return ResponseEntity.ok()
-            .contentType(MediaType.IMAGE_JPEG) // PNGなら MediaType.IMAGE_PNG
-            .body(image);
-}
-    // ✅ 思い出の画像追加
-    @PostMapping("/{id}/images")
-    public ResponseEntity<MemoryResponse> addImagesToMemory(
-        @PathVariable Long id,
-        @RequestParam("images") List<MultipartFile> images
-        ) {
-    MemoryResponse updatedMemory = memoryService.addImagesToMemory(id, images);
-    return ResponseEntity.ok(updatedMemory);
-}
+      .contentType(MediaType.IMAGE_JPEG) // ここは実際にファイルタイプを判定したい場合は工夫できる
+      .body(image);
+  }
 
+  // ✅ 思い出に画像追加
+  @PostMapping("/{id}/images")
+  public ResponseEntity<MemoryResponse> addImagesToMemory(
+    @PathVariable Long id,
+    @RequestParam("images") List<MultipartFile> images
+  ) {
+    return ResponseEntity.ok(memoryService.addImagesToMemory(id, images));
+  }
 
-    // ✅ 思い出削除
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMemory(@PathVariable Long id) {
-        memoryService.deleteMemoryById(id);
-        return ResponseEntity.noContent().build();
-    }
+  // ✅ 思い出削除
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteMemory(@PathVariable Long id) {
+    memoryService.deleteMemoryById(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/{memoryId}/images/{imageId}/comment")
+  public ResponseEntity<MemoryResponse> addCommentToImage(
+    @PathVariable Long memoryId,
+    @PathVariable Long imageId,
+    @RequestBody MemoryImageCommentRequest request
+  ) {
+    MemoryResponse updated = memoryService.addCommentToImage(
+      memoryId,
+      imageId,
+      request.getComment()
+    );
+    return ResponseEntity.ok(updated);
+  }
 }

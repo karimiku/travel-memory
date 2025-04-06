@@ -26,48 +26,49 @@ import com.example.travel.security.JWTUtil;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private UserRepository usersRepository;
+  @Autowired
+  private UserRepository usersRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+  @Autowired
+  private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JWTUtil jwtUtil;
+  @Autowired
+  private JWTUtil jwtUtil;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        if (usersRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("このアドレスはすでに使用されています。");
-        }
-
-        AppUser newUser = new AppUser();
-        newUser.setEmail(registerRequest.getEmail());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        newUser.setAuthProvider(AuthProvider.LOCAL); // 追加！
-
-        usersRepository.save(newUser);
-
-        return ResponseEntity.ok("ユーザー登録が完了しました。");
+  @PostMapping("/signup")
+  public ResponseEntity<?> register(
+      @RequestBody RegisterRequest registerRequest) {
+    if (usersRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+      return ResponseEntity.badRequest()
+          .body("このアドレスはすでに使用されています。");
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-            );
+    AppUser newUser = new AppUser();
+    newUser.setEmail(registerRequest.getEmail());
+    newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+    newUser.setAuthProvider(AuthProvider.LOCAL); // 追加！
 
-            String token = jwtUtil.generateToken(loginRequest.getEmail());
+    usersRepository.save(newUser);
 
-            return ResponseEntity.ok(new LoginResponse(token));
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("メールアドレスまたはパスワードが違います。");
-        }
+    return ResponseEntity.ok("ユーザー登録が完了しました。");
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(
+              loginRequest.getEmail(),
+              loginRequest.getPassword()));
+      String token = jwtUtil.generateToken(loginRequest.getEmail());
+
+      return ResponseEntity.ok(new LoginResponse(token));
+    } catch (AuthenticationException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+          "メールアドレスまたはパスワードが違います。");
     }
-
-    
+  }
 }

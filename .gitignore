@@ -39,6 +39,8 @@ target/
 .mvn/
 !.mvn/wrapper/maven-wrapper.jar
 
+
+
 # ====== build・dist ======
 build/
 !**/src/main/**/build/
@@ -53,6 +55,7 @@ node_modules/
 # ====== Secrets / 環境変数 ======
 .env*
 backend/travel/src/main/resources/application.properties
+backend/travel/uploads
 
 # ====== backend/demo 除外 ======
 backend/demo/
