@@ -1,9 +1,11 @@
 package com.example.travel.dto;
 
-import com.example.travel.entity.Memory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.example.travel.entity.Memory;
+
 import lombok.Data;
 
 @Data
@@ -14,7 +16,7 @@ public class MemoryResponse {
   private String prefecture;
   private LocalDate date;
   private String description;
-  private List<String> imageUrls; // 複数画像URL
+  private List<MemoryImageResponse> images;
 
   public static MemoryResponse fromEntity(Memory memory) {
     MemoryResponse dto = new MemoryResponse();
@@ -23,11 +25,11 @@ public class MemoryResponse {
     dto.prefecture = memory.getPrefecture();
     dto.date = memory.getDate();
     dto.description = memory.getDescription();
-    dto.imageUrls = memory
-      .getImages()
-      .stream()
-      .map(image -> image.getImageUrl())
-      .collect(Collectors.toList());
+    dto.images = memory
+        .getImages()
+        .stream()
+        .map(MemoryImageResponse::fromEntity)
+        .collect(Collectors.toList());
     return dto;
   }
 }

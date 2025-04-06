@@ -6,13 +6,19 @@ import MemoryList from "../component/MemoryList";
 import MemoryEdit from "../component/MemoryEdit";
 import "../css/MemoryDetail.css";
 
+type MemoryImage = {
+  id: number;
+  imageUrl: string;
+  comment: string | null;
+};
+
 type Memory = {
   id: number;
   title: string;
   prefecture: string;
   date: string;
   description: string;
-  imageUrls: string[];
+  images: MemoryImage[];
 };
 
 const MemoryDetail = () => {
@@ -22,6 +28,8 @@ const MemoryDetail = () => {
   const [memory, setMemory] = useState<Memory | null>(null);
   const [imageBlobs, setImageBlobs] = useState<string[]>([]);
   const [isMemoryEditing, setIsMemoryEditing] = useState(false);
+  const [showCommentInputs, setShowCommentInputs] = useState<boolean[]>([]);
+  const [commentInputs, setCommentInputs] = useState<string[]>([]);
 
   const fetchMemoryWithImages = async () => {
     try {
@@ -29,11 +37,19 @@ const MemoryDetail = () => {
       const response = await axiosClient.get(`/auth/api/memories/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      if (!response.data.images) {
+        console.warn("images が存在しません");
+        setMemory(response.data);
+        setImageBlobs([]);
+        return;
+      }
+
       setMemory(response.data);
 
       const blobs = await Promise.all(
-        response.data.imageUrls.map(async (url: string) => {
-          const filename = url.split("/").pop();
+        response.data.images.map(async (img: MemoryImage) => {
+          const filename = img.imageUrl.split("/").pop();
           const imageRes = await axiosClient.get(
             `/auth/api/memories/${id}/images/${filename}`,
             {
@@ -44,7 +60,10 @@ const MemoryDetail = () => {
           return URL.createObjectURL(imageRes.data);
         })
       );
+
       setImageBlobs(blobs);
+      setShowCommentInputs(new Array(response.data.images.length).fill(false));
+      setCommentInputs(new Array(response.data.images.length).fill(""));
     } catch (error) {
       console.error("データの取得に失敗:", error);
     }
@@ -59,6 +78,38 @@ const MemoryDetail = () => {
   const handleUpdated = () => {
     setIsMemoryEditing(false);
     fetchMemoryWithImages();
+  };
+
+  const handleImageCommentSubmit = async (
+    e: React.FormEvent,
+    index: number
+  ) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    const imageId = memory?.images[index].id;
+    const comment = commentInputs[index];
+
+    try {
+      await axiosClient.post(
+        `/auth/api/memories/${id}/images/${imageId}/comment`,
+        { comment },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setShowCommentInputs((prev) => {
+        const updated = [...prev];
+        updated[index] = false;
+        return updated;
+      });
+
+      fetchMemoryWithImages(); // 最新状態取得
+    } catch (error) {
+      console.error("コメントの保存に失敗:", error);
+    }
   };
 
   const handleDelete = async () => {
@@ -110,15 +161,48 @@ const MemoryDetail = () => {
           {/* 右カラム */}
           <div className="memory-right">
             <div className="photo-wrapper">
-              {imageBlobs.map((blobUrl, index) => (
-                <div className="photo-block" key={index}>
+              {memory.images.map((img, index) => (
+                <div className="photo-block" key={img.id}>
                   <div className="memory-comment">
-                    写真に対するコメント（今後追加予定）
+                    {showCommentInputs[index] ? (
+                      <form
+                        onSubmit={(e) => handleImageCommentSubmit(e, index)}
+                      >
+                        <input
+                          type="text"
+                          value={commentInputs[index]}
+                          onChange={(e) =>
+                            setCommentInputs((prev) => {
+                              const updated = [...prev];
+                              updated[index] = e.target.value;
+                              return updated;
+                            })
+                          }
+                          autoFocus
+                        />
+                        <button type="submit">保存</button>
+                      </form>
+                    ) : (
+                      <>
+                        <p>{img.comment ? img.comment : "コメントなし"}</p>
+                        <button
+                          className="comment-add-button"
+                          onClick={() =>
+                            setShowCommentInputs((prev) => {
+                              const updated = [...prev];
+                              updated[index] = true;
+                              return updated;
+                            })
+                          }
+                        >
+                          コメント追加
+                        </button>
+                      </>
+                    )}
                   </div>
                   <div className="image-and-button">
-                    <button className="comment-add-button">コメント追加</button>
                     <img
-                      src={blobUrl}
+                      src={imageBlobs[index]}
                       alt={`memory-${index}`}
                       className="memory-image"
                     />
