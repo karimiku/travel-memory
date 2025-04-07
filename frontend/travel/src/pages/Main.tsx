@@ -1,59 +1,34 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import MemoryList from '../component/MemoryList';
-import MemoryCreate from '../component/MemoryCreate';
-import MapViewer from '../component/MapViewer';
-import Header from '../component/Header';
-import '../css/Main.css';
-
-
-type Memory = {
-    id: number;
-    title: string;
-    prefecture: string;
-    date: string;
-    description: string;
-    imageUrls: string[];
-};
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import MemoryList from "../component/MemoryList";
+import MemoryCreate from "../component/MemoryCreate";
+import Map from "../component/Map";
+import Header from "../component/Header";
+import "../css/Main.css";
 
 const Main = () => {
-    const [showCreate, setShowCreate] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-    useEffect(() => {
-        document.body.id = 'main';
-    }, []);
+  const triggerRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
+  useEffect(() => {
+    document.body.id = "main";
+  }, []);
 
-    const toggleCreateForm = () => {
-        setShowCreate(!showCreate);
-
-    };
-
-
-    return (
-        <div className="main-wrapper">
-            <Header />
-            <MemoryList />
-
-
-            <div className="main-content">
-                <div className="map-section">
-                    <button onClick={toggleCreateForm} className="add-button">
-                        {showCreate ? '一覧に戻る' : '＋ Memory'}
-                    </button>
-
-                </div>
-                <MapViewer />
-
-                {showCreate && (
-                    <div className="create-form">
-                        <MemoryCreate />
-                    </div>
-                )}
-            </div>
+  return (
+    <div className="main-wrapper">
+      <Header />
+      <MemoryList refreshKey={refreshKey} />
+      <div className="main-content">
+        <Map />
+        <div className="create-form">
+          <MemoryCreate onMemoryCreated={triggerRefresh} />
         </div>
-    );
-
+      </div>
+    </div>
+  );
 };
 
 export default Main;

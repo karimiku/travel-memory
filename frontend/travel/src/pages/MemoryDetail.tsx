@@ -132,7 +132,7 @@ const MemoryDetail = () => {
   return (
     <div className="main-wrapper">
       <Header />
-      <MemoryList />
+      <MemoryList refreshKey={0} />
       <div className="memory-detail-container">
         <div className="memory-detail-body">
           {/* 左カラム */}

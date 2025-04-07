@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.travel.dto.MemoryImageCommentRequest;
+import com.example.travel.dto.MemoryPrefectureResponse;
 import com.example.travel.dto.MemoryRequest;
 import com.example.travel.dto.MemoryResponse;
 import com.example.travel.service.MemoryService;
@@ -110,4 +111,11 @@ public class MemoryController {
         request.getComment());
     return ResponseEntity.ok(updated);
   }
+
+  @GetMapping("/prefectures")
+  public ResponseEntity<List<MemoryPrefectureResponse>> getUserMemoryPrefectures() {
+    List<MemoryPrefectureResponse> prefectures = memoryService.getUserMemoryPrefectures();
+    return ResponseEntity.ok(prefectures);
+  }
+
 }

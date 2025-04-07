@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import axiosClient from "../lib/axiosClient";
 import "../css/MemoryEdit.css";
 
-type Memory = {
+interface MemoryRequest {
   id: number;
   title: string;
   prefecture: string;
   date: string;
   description: string;
-};
+}
 
 type Props = {
-  memory: Memory;
+  memory: MemoryRequest;
   onCancel: () => void;
   onUpdated: () => void;
 };
