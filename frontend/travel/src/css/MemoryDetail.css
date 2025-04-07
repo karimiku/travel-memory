@@ -1,183 +1,245 @@
-.memory-detail-container {
-    background-color: #fef4dc;
-    padding: 32px;
-    min-height: 100vh;
-    width: 1200px;
-    border-radius: 16px;
+.main-wrapper {
+  background-color: #fef4dc;
+  padding: 32px;
+  min-height: 100vh;
+  width: 1200px;
+  border-radius: 16px;
 }
 
 .memory-detail-body {
-    display: flex;
-    max-width: 1300px;
-    height: 700px;
-    margin: 0 auto;
-    background-color: #fffdf8;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+  display: flex;
+  max-width: 1300px;
+  height: 700px;
+  margin: 0 auto;
+  background-color: #fffdf8;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 /* 左カラム */
 .memory-left {
-    flex: 1;
-    padding: 32px;
-    background-color: #fffef9;
-    border-right: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: 16px 0 0 16px;
+  flex: 1;
+  padding: 32px;
+  background-color: #fffef9;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 16px 0 0 16px;
 }
 
 .memory-left h2 {
-    font-size: 28px;
-    margin-bottom: 8px;
-    color: #333;
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: #333;
 }
 
 .memory-left p {
-    font-size: 16px;
-    color: #555;
-    margin-bottom: 12px;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 12px;
 }
 
 .memory-left input,
 .memory-left textarea {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 16px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    background-color: #fffaf0;
-    margin-bottom: 16px;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background-color: #fffaf0;
+  margin-bottom: 16px;
 }
 
 .memory-left input:focus,
 .memory-left textarea:focus {
-    outline: none;
-    border-color: #ffa07a;
+  outline: none;
+  border-color: #ffa07a;
 }
 
 .memory-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
 }
 
 .memory-buttons button {
-    background-color: #c6e2ff;
-    color: #333;
-    font-weight: bold;
-    font-size: 14px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background-color: #c6e2ff;
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .memory-buttons button:hover {
-    background-color: #a5d2ff;
+  background-color: #a5d2ff;
 }
 
 /* 右カラム */
 .memory-right {
-    flex: 1;
-    padding: 24px;
-    background-color: #f4f9ff;
-    overflow-y: auto;
-    border-radius: 0 16px 16px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  flex: 1;
+  padding: 24px;
+  background-color: #f4f9ff;
+  overflow-y: auto;
+  border-radius: 0 16px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* 写真とコメント・ボタンを縦並び */
 .photo-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    overflow-y: auto;
-    max-height: 550px;
-    padding-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  max-height: 550px;
+  padding-right: 8px;
 }
 
 .photo-block {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 /* コメント吹き出し */
 .memory-comment {
-    background-color: #d4eaff;
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 14px;
-    color: #333;
-    position: relative;
-    width: fit-content;
-    max-width: 350px;
-    text-align: center;
-    margin-bottom: 8px;
+  background-color: #d4eaff;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+  position: relative;
+  width: fit-content;
+  max-width: 350px;
+  text-align: center;
+  margin-bottom: 8px;
 }
 
 .memory-comment:before,
 .memory-comment:after {
-    position: absolute;
-    border-radius: 50%;
-    background-color: #d4eaff;
-    content: "";
+  position: absolute;
+  border-radius: 50%;
+  background-color: #d4eaff;
+  content: "";
 }
 
 .memory-comment:before {
-    top: 100%;
-    left: 40px;
-    height: 15px;
-    width: 15px;
+  top: 100%;
+  left: 40px;
+  height: 15px;
+  width: 15px;
 }
 
 .memory-comment:after {
-    top: 130%;
-    left: 50px;
-    height: 10px;
-    width: 10px;
+  top: 130%;
+  left: 50px;
+  height: 10px;
+  width: 10px;
+}
+
+.comment-form-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.comment-form {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.comment-form button[type="submit"],
+.comment-cancel-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.comment-form button[type="submit"] {
+  background-color: #4caf50;
+  color: white;
+}
+
+.comment-form button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.comment-cancel-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.comment-cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+.comment-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.comment-display p {
+  margin: 0;
+  flex: 1;
+}
+
+.comment-edit-button,
+.comment-add-button {
+  padding: 6px 12px;
+  background-color: #c6e2ff;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.comment-edit-button:hover,
+.comment-add-button:hover {
+  background-color: #a5d2ff;
+}
+
+.comment-add-button {
+  width: 100%;
+  padding: 8px 16px;
 }
 
 /* 写真とボタンの横並び */
 .image-and-button {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-direction: row-reverse;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-direction: row-reverse;
+  position: relative;
 }
 
 .memory-image {
-    width: 100%;
-    max-width: 400px;
-    max-height: 240px;
-    object-fit: contain;
-    border-radius: 12px;
-    background-color: #eaf6ff;
-    border: 1px solid #ccc;
-}
-
-.comment-add-button {
-    background-color: #b5dcff;
-    border: none;
-    border-radius: 12px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s;
-    height: 40px;
-    white-space: nowrap;
-}
-
-.comment-add-button:hover {
-    background-color: #98ccff;
+  width: 100%;
+  max-width: 400px;
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: 12px;
+  background-color: #eaf6ff;
+  border: 1px solid #ccc;
 }

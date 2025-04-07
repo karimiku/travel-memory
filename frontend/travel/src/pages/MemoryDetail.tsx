@@ -63,7 +63,9 @@ const MemoryDetail = () => {
 
       setImageBlobs(blobs);
       setShowCommentInputs(new Array(response.data.images.length).fill(false));
-      setCommentInputs(new Array(response.data.images.length).fill(""));
+      setCommentInputs(
+        response.data.images.map((img: MemoryImage) => img.comment || "")
+      );
     } catch (error) {
       console.error("データの取得に失敗:", error);
     }
@@ -165,39 +167,72 @@ const MemoryDetail = () => {
                 <div className="photo-block" key={img.id}>
                   <div className="memory-comment">
                     {showCommentInputs[index] ? (
-                      <form
-                        onSubmit={(e) => handleImageCommentSubmit(e, index)}
-                      >
-                        <input
-                          type="text"
-                          value={commentInputs[index]}
-                          onChange={(e) =>
-                            setCommentInputs((prev) => {
-                              const updated = [...prev];
-                              updated[index] = e.target.value;
-                              return updated;
-                            })
-                          }
-                          autoFocus
-                        />
-                        <button type="submit">保存</button>
-                      </form>
-                    ) : (
-                      <>
-                        <p>{img.comment ? img.comment : "コメントなし"}</p>
+                      <div className="comment-form-container">
+                        <form
+                          onSubmit={(e) => handleImageCommentSubmit(e, index)}
+                          className="comment-form"
+                        >
+                          <input
+                            type="text"
+                            value={commentInputs[index]}
+                            onChange={(e) =>
+                              setCommentInputs((prev) => {
+                                const updated = [...prev];
+                                updated[index] = e.target.value;
+                                return updated;
+                              })
+                            }
+                            autoFocus
+                            placeholder="コメントを入力"
+                          />
+                          <button type="submit">保存</button>
+                        </form>
                         <button
-                          className="comment-add-button"
-                          onClick={() =>
+                          className="comment-cancel-button"
+                          onClick={() => {
                             setShowCommentInputs((prev) => {
                               const updated = [...prev];
-                              updated[index] = true;
+                              updated[index] = false;
                               return updated;
-                            })
-                          }
+                            });
+                          }}
                         >
-                          コメント追加
+                          キャンセル
                         </button>
-                      </>
+                      </div>
+                    ) : (
+                      <div className="comment-display">
+                        {img.comment ? (
+                          <>
+                            <p>{img.comment}</p>
+                            <button
+                              className="comment-edit-button"
+                              onClick={() => {
+                                setShowCommentInputs((prev) => {
+                                  const updated = [...prev];
+                                  updated[index] = true;
+                                  return updated;
+                                });
+                              }}
+                            >
+                              編集
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            className="comment-add-button"
+                            onClick={() => {
+                              setShowCommentInputs((prev) => {
+                                const updated = [...prev];
+                                updated[index] = true;
+                                return updated;
+                              });
+                            }}
+                          >
+                            コメントを追加
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                   <div className="image-and-button">
