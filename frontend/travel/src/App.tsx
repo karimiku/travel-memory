@@ -8,10 +8,9 @@ import AuthForm from "./pages/AuthForm";
 import Loading from "./pages/Loading";
 import OAuth2Redirect from "./pages/oauth2/redirect";
 import MemoryDetail from "./pages/MemoryDetail";
-import { JSX } from "react";
 import Main from "./pages/Main";
+import { JSX } from "react";
 
-// PrivateRoute コンポーネント（トークンがなければリダイレクト）
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const token = localStorage.getItem("token");
   return token ? element : <Navigate to="/" replace />;
@@ -21,21 +20,22 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* AuthForm（ログイン/新規登録の切り替え） */}
+        {/* ログイン系 */}
         <Route path="/" element={<AuthForm />} />
-
-        {/* OAuth2 リダイレクト */}
         <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
 
         {/* ログイン後の画面 */}
         <Route path="/main" element={<PrivateRoute element={<Main />} />} />
+        <Route
+          path="/memories/:id"
+          element={<PrivateRoute element={<MemoryDetail />} />}
+        />
 
-        {/* その他はすべてルートへ */}
-        <Route path="*" element={<Navigate to="/" replace />} />
         {/* ローディング画面 */}
         <Route path="/loading" element={<Loading />} />
-        {/* メモリー詳細画面 */}
-        <Route path="/memories/:id" element={<MemoryDetail />} />
+
+        {/* その他は全部トップに */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

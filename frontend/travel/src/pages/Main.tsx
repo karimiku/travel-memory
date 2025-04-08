@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import MemoryList from "../component/MemoryList";
 import MemoryCreate from "../component/MemoryCreate";
 import Map from "../component/Map";
@@ -22,7 +21,7 @@ const Main = () => {
       <Header />
       <MemoryList refreshKey={refreshKey} />
       <div className="main-content">
-        <Map />
+        <Map refreshKey={refreshKey} />
         <div className="create-form">
           <MemoryCreate onMemoryCreated={triggerRefresh} />
         </div>

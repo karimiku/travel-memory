@@ -1,13 +1,16 @@
 body#main {
   height: 100vh;
   margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .main-wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f2dec4;
+  background-color: #fef4dc;
 }
 
 /* 地図側 */

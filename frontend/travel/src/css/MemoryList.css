@@ -88,11 +88,11 @@
 /* ← ボタンを内側に寄せる */
 .scroll-button.left {
   margin-left: 80px;
-  margin-right: 800px;
+  margin-right: 1000px;
 }
 
 /* → ボタンを内側に寄せる */
 .scroll-button.right {
   margin-right: 80px;
-  margin-left: 800px;
+  margin-left: 1000px;
 }

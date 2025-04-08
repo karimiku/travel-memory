@@ -1,25 +1,26 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useToast } from "../hooks/useToast";
 import axiosClient from "../lib/axiosClient";
 import Header from "../component/Header";
 import MemoryList from "../component/MemoryList";
 import MemoryEdit from "../component/MemoryEdit";
 import "../css/MemoryDetail.css";
 
-type MemoryImage = {
+interface MemoryImage {
   id: number;
   imageUrl: string;
   comment: string | null;
-};
+}
 
-type Memory = {
+interface Memory {
   id: number;
   title: string;
   prefecture: string;
   date: string;
   description: string;
   images: MemoryImage[];
-};
+}
 
 const MemoryDetail = () => {
   const { id } = useParams();
@@ -28,8 +29,10 @@ const MemoryDetail = () => {
   const [memory, setMemory] = useState<Memory | null>(null);
   const [imageBlobs, setImageBlobs] = useState<string[]>([]);
   const [isMemoryEditing, setIsMemoryEditing] = useState(false);
-  const [showCommentInputs, setShowCommentInputs] = useState<boolean[]>([]);
   const [commentInputs, setCommentInputs] = useState<string[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  const { triggerToast, Toast } = useToast();
 
   const fetchMemoryWithImages = async () => {
     try {
@@ -37,13 +40,6 @@ const MemoryDetail = () => {
       const response = await axiosClient.get(`/auth/api/memories/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.data.images) {
-        console.warn("images が存在しません");
-        setMemory(response.data);
-        setImageBlobs([]);
-        return;
-      }
 
       setMemory(response.data);
 
@@ -62,7 +58,6 @@ const MemoryDetail = () => {
       );
 
       setImageBlobs(blobs);
-      setShowCommentInputs(new Array(response.data.images.length).fill(false));
       setCommentInputs(
         response.data.images.map((img: MemoryImage) => img.comment || "")
       );
@@ -80,17 +75,15 @@ const MemoryDetail = () => {
   const handleUpdated = () => {
     setIsMemoryEditing(false);
     fetchMemoryWithImages();
+    triggerToast("思い出を更新しました！");
   };
 
-  const handleImageCommentSubmit = async (
-    e: React.FormEvent,
-    index: number
-  ) => {
-    e.preventDefault();
+  const handleCommentSave = async (index: number) => {
     const token = localStorage.getItem("token");
     const imageId = memory?.images[index].id;
     const comment = commentInputs[index];
-
+    const beforeComment = memory?.images[index].comment ?? "";
+    // コメントが変更されていなければ終了（編集モードだけ解除
     try {
       await axiosClient.post(
         `/auth/api/memories/${id}/images/${imageId}/comment`,
@@ -102,19 +95,26 @@ const MemoryDetail = () => {
         }
       );
 
-      setShowCommentInputs((prev) => {
-        const updated = [...prev];
-        updated[index] = false;
-        return updated;
-      });
+      // 更新完了後に再取得
+      await fetchMemoryWithImages();
+      setEditingIndex(null);
 
-      fetchMemoryWithImages(); // 最新状態取得
+      // 状態に応じてメッセージを切り替え
+      if (beforeComment === "" && comment !== "") {
+        triggerToast("コメントを追加しました！");
+      } else if (beforeComment !== "" && comment === "") {
+        triggerToast("コメントを削除しました！");
+      } else if (beforeComment !== comment) {
+        triggerToast("コメントを更新しました！");
+      }
     } catch (error) {
       console.error("コメントの保存に失敗:", error);
+      triggerToast("コメントの保存に失敗しました。");
+      setEditingIndex(null); // 失敗時も解除しておくと安心
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteMemory = async () => {
     if (!window.confirm("本当に削除しますか？")) return;
     try {
       const token = localStorage.getItem("token");
@@ -124,6 +124,21 @@ const MemoryDetail = () => {
       navigate("/main");
     } catch (error) {
       console.error("削除に失敗:", error);
+      triggerToast("削除に失敗しました。");
+    }
+  };
+
+  const handleDeleteImage = async (imageId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axiosClient.delete(`/auth/api/memories/${id}/images/${imageId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchMemoryWithImages();
+      triggerToast("画像を削除しました！");
+    } catch (error) {
+      console.error("画像の削除に失敗:", error);
+      triggerToast("画像の削除に失敗しました。");
     }
   };
 
@@ -135,13 +150,13 @@ const MemoryDetail = () => {
       <MemoryList refreshKey={0} />
       <div className="memory-detail-container">
         <div className="memory-detail-body">
-          {/* 左カラム */}
           <div className="memory-left">
             {isMemoryEditing ? (
               <MemoryEdit
                 memory={memory}
                 onCancel={() => setIsMemoryEditing(false)}
                 onUpdated={handleUpdated}
+                triggerToast={triggerToast}
               />
             ) : (
               <>
@@ -154,93 +169,64 @@ const MemoryDetail = () => {
                 </p>
                 <div className="memory-buttons">
                   <button onClick={handleEditToggle}>編集</button>
-                  <button onClick={handleDelete}>削除</button>
+                  <button onClick={handleDeleteMemory}>削除</button>
                 </div>
               </>
             )}
           </div>
 
-          {/* 右カラム */}
           <div className="memory-right">
             <div className="photo-wrapper">
               {memory.images.map((img, index) => (
                 <div className="photo-block" key={img.id}>
-                  <div className="memory-comment">
-                    {showCommentInputs[index] ? (
-                      <div className="comment-form-container">
-                        <form
-                          onSubmit={(e) => handleImageCommentSubmit(e, index)}
-                          className="comment-form"
-                        >
-                          <input
-                            type="text"
-                            value={commentInputs[index]}
-                            onChange={(e) =>
-                              setCommentInputs((prev) => {
-                                const updated = [...prev];
-                                updated[index] = e.target.value;
-                                return updated;
-                              })
-                            }
-                            autoFocus
-                            placeholder="コメントを入力"
-                          />
-                          <button type="submit">保存</button>
-                        </form>
-                        <button
-                          className="comment-cancel-button"
-                          onClick={() => {
-                            setShowCommentInputs((prev) => {
-                              const updated = [...prev];
-                              updated[index] = false;
-                              return updated;
-                            });
+                  <div className="comment-and-buttons">
+                    <button
+                      type="button"
+                      className="memory-comment"
+                      onClick={() => setEditingIndex(index)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          setEditingIndex(index);
+                        }
+                      }}
+                    >
+                      {editingIndex === index ? (
+                        <input
+                          type="text"
+                          value={commentInputs[index]}
+                          onChange={(e) => {
+                            const updated = [...commentInputs];
+                            updated[index] = e.target.value;
+                            setCommentInputs(updated);
                           }}
-                        >
-                          キャンセル
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="comment-display">
-                        {img.comment ? (
-                          <>
-                            <p>{img.comment}</p>
-                            <button
-                              className="comment-edit-button"
-                              onClick={() => {
-                                setShowCommentInputs((prev) => {
-                                  const updated = [...prev];
-                                  updated[index] = true;
-                                  return updated;
-                                });
-                              }}
-                            >
-                              編集
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            className="comment-add-button"
-                            onClick={() => {
-                              setShowCommentInputs((prev) => {
-                                const updated = [...prev];
-                                updated[index] = true;
-                                return updated;
-                              });
-                            }}
-                          >
-                            コメントを追加
-                          </button>
-                        )}
-                      </div>
-                    )}
+                          onBlur={() => handleCommentSave(index)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleCommentSave(index);
+                            }
+                          }}
+                          autoFocus
+                          className="comment-inline-input"
+                        />
+                      ) : (
+                        <p>{img.comment || "コメントを追加"}</p>
+                      )}
+                    </button>
                   </div>
-                  <div className="image-and-button">
+
+                  <div className="image-container">
                     <img
                       src={imageBlobs[index]}
                       alt={`memory-${index}`}
                       className="memory-image"
                     />
+                    <button
+                      className="image-delete-button"
+                      onClick={() => handleDeleteImage(img.id)}
+                    >
+                      削除
+                    </button>
                   </div>
                 </div>
               ))}
@@ -248,6 +234,7 @@ const MemoryDetail = () => {
           </div>
         </div>
       </div>
+      <Toast />
     </div>
   );
 };

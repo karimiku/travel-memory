@@ -57,28 +57,6 @@
   background-color: #e59e60;
 }
 
-.toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #ffe0b2;
-  /* 柔らかいオレンジ */
-  color: #333;
-  padding: 12px 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-weight: bold;
-  z-index: 1000;
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

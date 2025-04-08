@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useToast } from "../hooks/useToast";
 import axiosClient from "../lib/axiosClient";
 import "../css/MemoryEdit.css";
 
@@ -14,9 +15,10 @@ type Props = {
   memory: MemoryRequest;
   onCancel: () => void;
   onUpdated: () => void;
+  triggerToast: (msg: string) => void;
 };
 
-const MemoryEdit = ({ memory, onCancel, onUpdated }: Props) => {
+const MemoryEdit = ({ memory, onCancel, onUpdated, triggerToast }: Props) => {
   const [title, setTitle] = useState(memory.title);
   const [prefecture, setPrefecture] = useState(memory.prefecture);
   const [date, setDate] = useState(memory.date);
@@ -52,7 +54,7 @@ const MemoryEdit = ({ memory, onCancel, onUpdated }: Props) => {
       );
     } catch (error) {
       console.error("基本情報の更新に失敗しました:", error);
-      alert("情報の更新に失敗しました。");
+      triggerToast("更新に失敗しました。");
       return;
     }
 
@@ -74,12 +76,12 @@ const MemoryEdit = ({ memory, onCancel, onUpdated }: Props) => {
         );
       } catch (error) {
         console.error("画像の追加に失敗しました:", error);
-        alert("画像の追加に失敗しました。");
+        triggerToast("画像の追加に失敗しました。");
         return;
       }
     }
 
-    alert("思い出を更新しました！");
+    triggerToast("思い出を更新しました！");
     onUpdated();
   };
 

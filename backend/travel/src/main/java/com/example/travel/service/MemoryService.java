@@ -2,6 +2,7 @@ package com.example.travel.service;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,23 +61,25 @@ public class MemoryService {
     Memory saved = memoryRepository.save(memory);
 
     List<MemoryImage> images = new ArrayList<>();
-    for (MultipartFile file : imageFiles) {
-      try {
-        String fileName = imageService.saveImage(file);
-        String imageUrl = "/uploads/" + fileName;
+    if (imageFiles != null && !imageFiles.isEmpty()) {
+      for (MultipartFile file : imageFiles) {
+        try {
+          String fileName = imageService.saveImage(file);
+          String imageUrl = "/uploads/" + fileName;
 
-        MemoryImage img = new MemoryImage();
-        img.setImageUrl(imageUrl);
-        img.setMemory(saved);
-        images.add(img);
-      } catch (IOException e) {
-        throw new RuntimeException(
-            "画像の保存に失敗しました: " + file.getOriginalFilename(),
-            e);
+          MemoryImage img = new MemoryImage();
+          img.setImageUrl(imageUrl);
+          img.setMemory(saved);
+          images.add(img);
+        } catch (IOException e) {
+          throw new RuntimeException(
+              "画像の保存に失敗しました: " + file.getOriginalFilename(),
+              e);
+        }
       }
-    }
 
-    memoryImageRepository.saveAll(images);
+      memoryImageRepository.saveAll(images);
+    }
     saved.setImages(images);
     return MemoryResponse.fromEntity(saved);
   }
@@ -238,5 +241,22 @@ public class MemoryService {
           return response;
         })
         .collect(Collectors.toList());
+  }
+
+  public void deleteImageFromMemory(Long memoryId, Long imageId) {
+    AppUser user = getAuthenticatedUser();
+
+    Memory memory = memoryRepository.findById(memoryId)
+        .orElseThrow(() -> new RuntimeException("指定された思い出が見つかりません"));
+
+    if (!memory.getUser().getId().equals(user.getId())) {
+      throw new RuntimeException("この思い出を編集する権限がありません");
+    }
+
+    MemoryImage image = memoryImageRepository.findById(imageId)
+        .orElseThrow(() -> new RuntimeException("指定された画像が見つかりません"));
+    String filename = Paths.get(image.getImageUrl()).getFileName().toString();
+    imageService.deleteImage(filename);
+    memoryImageRepository.delete(image);
   }
 }

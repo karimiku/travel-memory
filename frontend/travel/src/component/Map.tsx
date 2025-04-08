@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import japanData from "../data/japan.json";
@@ -10,7 +9,11 @@ interface MemoryPrefectureResponse {
   prefecture: string;
 }
 
-const Map = () => {
+type Props = {
+  refreshKey: number;
+};
+
+const Map = ({ refreshKey }: Props) => {
   const [prefectures, setPrefectures] = useState<MemoryPrefectureResponse[]>(
     []
   );
@@ -25,21 +28,23 @@ const Map = () => {
     return visitedPrefectures.includes(name) ? "#F2DEC4" : "#808080";
   };
 
-  const fetchPrefectures = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axiosClient.get("/auth/api/memories/prefectures", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPrefectures(response.data);
-    } catch (error) {
-      console.error("思い出の取得に失敗しました:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchPrefectures = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axiosClient.get(
+          "/auth/api/memories/prefectures",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setPrefectures(response.data);
+      } catch (error) {
+        console.error("思い出の取得に失敗しました:", error);
+      }
+    };
     fetchPrefectures();
-  }, []);
+  }, [refreshKey]);
 
   return (
     <div className="map-frame">

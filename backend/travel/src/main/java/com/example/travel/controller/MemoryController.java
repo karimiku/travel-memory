@@ -118,4 +118,12 @@ public class MemoryController {
     return ResponseEntity.ok(prefectures);
   }
 
+  @DeleteMapping("/{memoryId}/images/{imageId}")
+  public ResponseEntity<Void> deleteImageFromMemory(
+      @PathVariable Long memoryId,
+      @PathVariable Long imageId) {
+    memoryService.deleteImageFromMemory(memoryId, imageId);
+    return ResponseEntity.noContent().build();
+  }
+
 }
