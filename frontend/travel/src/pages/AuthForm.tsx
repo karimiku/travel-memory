@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/AuthForm.css";
 import GoogleLoginButton from "../component/GoogleLoginButton";
 
 const AuthForm: React.FC = () => {
+  const [showModal, setShowModal] = useState(false);
+
   useEffect(() => {
     document.body.id = "AuthForm";
-  });
+  }, []);
+
   return (
     <div className="auth-wrapper">
       <main className="auth-main">
@@ -17,7 +20,6 @@ const AuthForm: React.FC = () => {
             あなただけの旅マップ。
           </h1>
 
-          {/* 🔹 分割して動きを出す */}
           <p className="app-description">
             <span className="animated-line line1">
               大切な旅の記録を、もっと素敵に残しませんか？
@@ -49,13 +51,29 @@ const AuthForm: React.FC = () => {
             <li>🔒 Googleログインで安心・簡単</li>
           </ul>
 
-          <div
-            className="login-button-wrapper animated-line line5"
-            style={{ animationDelay: "1s" }}
-          >
-            <GoogleLoginButton />
+          <div className="login-button-wrapper">
+            <button className="start-button" onClick={() => setShowModal(true)}>
+              無料ではじめる
+            </button>
           </div>
         </div>
+
+        {/* モーダル表示 */}
+        {showModal && (
+          <div className="login-modal">
+            <div className="login-modal-content">
+              <button
+                className="modal-close"
+                onClick={() => setShowModal(false)}
+              >
+                ×
+              </button>
+              <h3>ログイン・新規登録</h3>
+              <p>Googleアカウントでログインして、サービスをはじめよう。</p>
+              <GoogleLoginButton />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

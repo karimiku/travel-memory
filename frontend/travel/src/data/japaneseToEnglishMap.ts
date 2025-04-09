@@ -1,4 +1,4 @@
-export const prefectureMap: { [key: string]: string } = {
+const japaneseToEnglishMap: { [key: string]: string } = {
   北海道: "Hokkaido",
   青森県: "Aomori",
   岩手県: "Iwate",
@@ -48,4 +48,4 @@ export const prefectureMap: { [key: string]: string } = {
   沖縄県: "Okinawa",
 };
 
-export default prefectureMap;
+export default japaneseToEnglishMap;

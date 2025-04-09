@@ -9,6 +9,10 @@ const Header: FC = () => {
     navigate("/main");
   };
 
+  const handleAllMemories = () => {
+    navigate("/allMemories");
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
@@ -20,7 +24,9 @@ const Header: FC = () => {
         <button className="nav-button" onClick={handleMain}>
           ホーム
         </button>
-        <button className="nav-button">思い出</button>
+        <button className="nav-button" onClick={handleAllMemories}>
+          思い出
+        </button>
         <button className="nav-button" onClick={handleLogout}>
           ログアウト
         </button>

@@ -23,6 +23,10 @@ interface Memory {
 }
 
 const MemoryDetail = () => {
+  useEffect(() => {
+    document.body.id = "memory-detail";
+  }, []);
+
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -31,6 +35,7 @@ const MemoryDetail = () => {
   const [isMemoryEditing, setIsMemoryEditing] = useState(false);
   const [commentInputs, setCommentInputs] = useState<string[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [modalImage, setModalImage] = useState<string | null>(null);
 
   const { triggerToast, Toast } = useToast();
 
@@ -142,6 +147,11 @@ const MemoryDetail = () => {
     }
   };
 
+  const adjustTextareaHeight = (el: HTMLTextAreaElement) => {
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  };
+
   if (!memory) return <p>読み込み中...</p>;
 
   return (
@@ -191,13 +201,20 @@ const MemoryDetail = () => {
                       }}
                     >
                       {editingIndex === index ? (
-                        <input
-                          type="text"
+                        <textarea
                           value={commentInputs[index]}
                           onChange={(e) => {
                             const updated = [...commentInputs];
                             updated[index] = e.target.value;
                             setCommentInputs(updated);
+                            adjustTextareaHeight(
+                              e.target as HTMLTextAreaElement
+                            );
+                          }}
+                          onFocus={(e) => {
+                            adjustTextareaHeight(
+                              e.target as HTMLTextAreaElement
+                            );
                           }}
                           onBlur={() => handleCommentSave(index)}
                           onKeyDown={(e) => {
@@ -207,7 +224,7 @@ const MemoryDetail = () => {
                             }
                           }}
                           autoFocus
-                          className="comment-inline-input"
+                          className="memory-inline-textarea"
                         />
                       ) : (
                         <p>{img.comment || "コメントを追加"}</p>
@@ -220,7 +237,27 @@ const MemoryDetail = () => {
                       src={imageBlobs[index]}
                       alt={`memory-${index}`}
                       className="memory-image"
+                      onClick={() => setModalImage(imageBlobs[index])}
                     />
+                    {modalImage && (
+                      <div
+                        className="modal-overlay"
+                        onClick={() => setModalImage(null)}
+                      >
+                        <div
+                          className="modal-content"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <img src={modalImage} alt="拡大画像" />
+                          <button
+                            className="modal-close"
+                            onClick={() => setModalImage(null)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     <button
                       className="image-delete-button"
                       onClick={() => handleDeleteImage(img.id)}

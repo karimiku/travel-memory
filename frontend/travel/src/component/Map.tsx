@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import japanData from "../data/japan.json";
 import "../css/Map.css";
-import prefectureMap from "../data/prefectureMap";
+import japaneseToEnglishMap from "../data/japaneseToEnglishMap";
+import englishToJapaneseMap from "../data/englishToJapaneseMap";
 import axiosClient from "../lib/axiosClient";
 
 interface MemoryPrefectureResponse {
@@ -14,19 +16,16 @@ type Props = {
 };
 
 const Map = ({ refreshKey }: Props) => {
+  const navigate = useNavigate();
   const [prefectures, setPrefectures] = useState<MemoryPrefectureResponse[]>(
     []
   );
 
   const visitedPrefectures = useMemo(() => {
     return prefectures
-      .map((p) => prefectureMap[p.prefecture])
+      .map((p) => japaneseToEnglishMap[p.prefecture])
       .filter((name): name is string => !!name);
   }, [prefectures]);
-
-  const getPrefectureColor = (name: string) => {
-    return visitedPrefectures.includes(name) ? "#F2DEC4" : "#808080";
-  };
 
   useEffect(() => {
     const fetchPrefectures = async () => {
@@ -56,19 +55,47 @@ const Map = ({ refreshKey }: Props) => {
       >
         <Geographies geography={japanData}>
           {({ geographies }) =>
-            geographies.map((geo) => (
-              <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                fill={getPrefectureColor(geo.properties.name)}
-                stroke="#FFF"
-                style={{
-                  default: { outline: "none" },
-                  hover: { fill: "#2196f3", outline: "none" },
-                  pressed: { fill: "#1976d2", outline: "none" },
-                }}
-              />
-            ))
+            geographies.map((geo) => {
+              const isVisited = visitedPrefectures.includes(
+                geo.properties.name
+              );
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  onClick={
+                    isVisited
+                      ? () =>
+                          navigate(`/allMemories`, {
+                            state: {
+                              prefecture:
+                                englishToJapaneseMap[geo.properties.name],
+                            },
+                          })
+                      : undefined
+                  }
+                  stroke="#FFF"
+                  style={
+                    {
+                      default: {
+                        fill: isVisited ? "#f5e0c8" : "#d3d3d3",
+                        cursor: isVisited ? "pointer" : "default",
+                        transition: "fill 0.3s ease",
+                        outline: "none",
+                      },
+                      hover: {
+                        fill: isVisited ? "#eebd7d" : "#d3d3d3",
+                        outline: "none",
+                      },
+                      pressed: {
+                        fill: isVisited ? "#e6733f" : "#d3d3d3",
+                        outline: "none",
+                      },
+                    } as any
+                  }
+                />
+              );
+            })
           }
         </Geographies>
       </ComposableMap>
