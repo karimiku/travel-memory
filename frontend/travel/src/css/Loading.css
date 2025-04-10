@@ -12,7 +12,7 @@
   height: 20px;
   position: absolute;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: #f7b977;
   left: 15%;
   transform-origin: 50%;
   animation: circle 0.5s alternate infinite ease;
@@ -95,7 +95,7 @@
   font-family: "Lato";
   font-size: 20px;
   letter-spacing: 12px;
-  color: #fff;
+  color: #f2935c;
   left: 15%;
 }
 

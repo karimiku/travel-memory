@@ -84,7 +84,7 @@ public class MemoryService {
     return MemoryResponse.fromEntity(saved);
   }
 
-  public List<MemoryResponse> getAllMemoriesForUser() {
+  public List<MemoryResponse> getAllMemories() {
     AppUser user = getAuthenticatedUser();
     List<Memory> memories = memoryRepository.findAllWithImagesByUserId(
         user.getId());

@@ -6,7 +6,6 @@ import Header from "../component/Header";
 import MemoryList from "../component/MemoryList";
 import MemoryEdit from "../component/MemoryEdit";
 import "../css/MemoryDetail.css";
-
 interface MemoryImage {
   id: number;
   imageUrl: string;
@@ -159,6 +158,7 @@ const MemoryDetail = () => {
       <Header />
       <MemoryList refreshKey={0} />
       <div className="memory-detail-container">
+        {/* <Map refreshKey={0} /> */}
         <div className="memory-detail-body">
           <div className="memory-left">
             {isMemoryEditing ? (

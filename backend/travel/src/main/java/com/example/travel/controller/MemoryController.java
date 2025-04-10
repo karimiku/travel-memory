@@ -39,7 +39,7 @@ public class MemoryController {
   // ✅ ユーザーの思い出一覧取得
   @GetMapping
   public ResponseEntity<List<MemoryResponse>> getUserAllMemories() {
-    return ResponseEntity.ok(memoryService.getAllMemoriesForUser());
+    return ResponseEntity.ok(memoryService.getAllMemories());
   }
 
   // ✅ 思い出作成（画像付き）
