@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/oauth2/redirect", "destination": "/index.html" }]
+}
