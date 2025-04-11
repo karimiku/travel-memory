@@ -3,7 +3,8 @@ import "../css/GoogleLoginButton.css";
 const GoogleLoginButton = () => {
   const handleLogin = () => {
     // Spring Bootが設定しているOAuth2エンドポイントに飛ばす
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    const redirectUrl = import.meta.env.VITE_GOOGLE_AUTH_URL;
+    window.location.href = redirectUrl;
   };
 
   return (
