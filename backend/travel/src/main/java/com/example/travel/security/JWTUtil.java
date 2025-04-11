@@ -1,17 +1,21 @@
 package com.example.travel.security;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import com.example.travel.service.CustomUserDetailsService;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JWTUtil {
@@ -19,59 +23,49 @@ public class JWTUtil {
   @Value("${jwt.secret}")
   private String secretKey;
 
-  // トークン生成
+  @Autowired
+  private CustomUserDetailsService userDetailsService; // ← DBからユーザー取得！
+
   public String generateToken(String email) {
     return Jwts.builder()
-      .setSubject(email)
-      .setIssuedAt(new Date())
-      .setExpiration(
-        new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 3)
-      ) // 3日
-      .signWith(
-        Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)),
-        SignatureAlgorithm.HS256
-      )
-      .compact();
+        .setSubject(email)
+        .setIssuedAt(new Date())
+        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 3))
+        .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+        .compact();
   }
 
-  // トークン検証
   public boolean validateToken(String token) {
     try {
       Jwts.parserBuilder()
-        .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-        .build()
-        .parseClaimsJws(token);
+          .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
+          .build()
+          .parseClaimsJws(token);
       return true;
     } catch (Exception e) {
       return false;
     }
   }
 
-  // トークンから認証情報を取得
   public Authentication getAuthentication(String token) {
     String username = getUsername(token);
-    UserDetails userDetails = User.withUsername(username)
-      .password("")
-      .authorities("USER")
-      .build();
+
+    // DBから取得するように変更！
+    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
     return new UsernamePasswordAuthenticationToken(
-      userDetails,
-      "",
-      userDetails.getAuthorities()
-    );
+        userDetails, null, userDetails.getAuthorities());
   }
 
-  // トークンからユーザー名を取得
   public String getUsername(String token) {
     return Jwts.parserBuilder()
-      .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-      .build()
-      .parseClaimsJws(token)
-      .getBody()
-      .getSubject();
+        .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
+        .build()
+        .parseClaimsJws(token)
+        .getBody()
+        .getSubject();
   }
 
-  // リクエストヘッダーからトークンを取得
   public String resolveToken(HttpServletRequest request) {
     String bearer = request.getHeader("Authorization");
     if (bearer != null && bearer.startsWith("Bearer ")) {

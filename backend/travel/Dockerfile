@@ -1,26 +1,16 @@
-# ✅ 1. ビルドステージ：Maven で jar ファイルを作成
-FROM maven:3.9.0-eclipse-temurin-17 AS build
+# Javaランタイムだけ持った軽量なイメージ
+FROM eclipse-temurin:17-jdk-jammy
 
+
+
+# 作業ディレクトリを作成
 WORKDIR /app
 
-# 依存関係だけ先にインストールしてキャッシュ効かせる（オプション）
-COPY pom.xml ./
-RUN mvn dependency:go-offline
+# JARファイルをコピー（パスは相対）
+COPY target/travel-0.0.1-SNAPSHOT.jar app.jar
 
-# ソースコードをコピーしてビルド
-COPY . .
-RUN mvn clean package -DskipTests
-
-# ✅ 2. 実行ステージ：軽量な JDK で jar を起動
-FROM openjdk:17-jdk-slim
-
-WORKDIR /app
-
-# jar ファイルだけをコピー
-COPY --from=build /app/target/*.jar app.jar
-
-# サーバーポート開放
+# ポートを指定（Spring Bootのデフォルトポート）
 EXPOSE 8080
 
-# アプリケーション起動コマンド
+# 起動コマンド
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -18,7 +18,7 @@
 
 # ====== OS・ログ・一時ファイル ======
 *.log
-logs
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -39,8 +39,6 @@ target/
 .mvn/
 !.mvn/wrapper/maven-wrapper.jar
 
-
-
 # ====== build・dist ======
 build/
 !**/src/main/**/build/
@@ -54,8 +52,11 @@ node_modules/
 
 # ====== Secrets / 環境変数 ======
 .env*
+# ローカル環境用のプロパティは無視（本番用はGitに含める）
 backend/travel/src/main/resources/application.properties
-backend/travel/uploads
+
+# ====== アップロードファイル（ユーザー画像など） ======
+backend/travel/uploads/
 
 # ====== backend/demo 除外 ======
-backend/demo/
+backend/demo/docker-compose.yml
