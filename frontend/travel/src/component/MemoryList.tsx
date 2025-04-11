@@ -71,7 +71,7 @@ const MemoryList = ({ refreshKey }: Props) => {
         {"<"}
       </button>
       <div className="memory-carousel" ref={scrollRef}>
-        {[...memories, ...memories].map((memory, index) => (
+        {[...memories].map((memory, index) => (
           <div key={`${memory.id}-${index}`} className="memory-card">
             <button
               className="memory-card-button"

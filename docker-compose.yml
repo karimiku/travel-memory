@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8
+    container_name: travel_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: travel_memory
+      MYSQL_USER: kamiriku
+      MYSQL_PASSWORD: rikuto0101
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend/travel
+    container_name: travel_backend
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: travel_memory
+      MYSQL_USER: kamiriku
+      MYSQL_PASSWORD: rikuto0101
+      JWT_SECRET: mysupersecretkeyformyjwtsecurity123435245525253524524578295925982485258992454
+      GOOGLE_CLIENT_ID: 947297503980-5cc9o6e4rhdr2s0r3namrb1mddn6dlr.apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET: GOCSPX-_KXuxgH4ewynmtMX0qeQVvZ53G
+      CORS_ORIGINS: https://your-vercel-app.vercel.app # ←ここをVercelのURLに変更してね
+    volumes:
+      - ./backend/travel/uploads:/uploads
+
+volumes:
+  db_data:
