@@ -1,16 +1,12 @@
-# Javaランタイムだけ持った軽量なイメージ
-FROM eclipse-temurin:17-jdk-jammy
-
-
-
-# 作業ディレクトリを作成
+# === Build Stage ===
+FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# JARファイルをコピー（パスは相対）
-COPY target/travel-0.0.1-SNAPSHOT.jar app.jar
-
-# ポートを指定（Spring Bootのデフォルトポート）
+# === Run Stage ===
+FROM eclipse-temurin:17-jdk-jammy
+WORKDIR /app
+COPY --from=build /app/target/travel-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-
-# 起動コマンド
 ENTRYPOINT ["java", "-jar", "app.jar"]
