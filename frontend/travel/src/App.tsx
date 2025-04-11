@@ -35,14 +35,7 @@ const App: React.FC = () => {
             </OnlyGuestRoute>
           }
         />
-        <Route
-          path="/oauth2/redirect"
-          element={
-            <OnlyGuestRoute>
-              <OAuth2Redirect />
-            </OnlyGuestRoute>
-          }
-        />
+        <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
 
         {/* ログイン後の画面 */}
         <Route path="/main" element={<PrivateRoute element={<Main />} />} />
