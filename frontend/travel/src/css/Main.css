@@ -11,13 +11,33 @@ body#main {
   background-color: #fef4dc;
 }
 
-/* 地図側 */
+/* 地図とフォームの横並び（PC表示） */
 .main-content {
   display: flex;
   flex: 1;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 120px); /* ヘッダー分を引いた高さ */
 }
 
+/* 思い出作成フォーム */
 .create-form {
   display: flex;
+}
+
+/* ===== スマホ用レイアウト（768px以下） ===== */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column; /* 横並び → 縦並びに */
+    height: auto; /* 高さを自動に */
+  }
+
+  .map-section {
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+  }
+
+  .create-form {
+    width: 100%;
+    flex-direction: column;
+  }
 }

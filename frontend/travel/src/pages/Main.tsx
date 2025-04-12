@@ -21,7 +21,9 @@ const Main = () => {
       <Header />
       <MemoryList refreshKey={refreshKey} />
       <div className="main-content">
-        <Map refreshKey={refreshKey} />
+        <div className="map-selection">
+          <Map refreshKey={refreshKey} />
+        </div>
         <div className="create-form">
           <MemoryCreate onMemoryCreated={triggerRefresh} />
         </div>

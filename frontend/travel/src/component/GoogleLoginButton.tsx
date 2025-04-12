@@ -1,9 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import "../css/GoogleLoginButton.css";
 
 const GoogleLoginButton = () => {
+  const navigate = useNavigate();
+
   const handleLogin = () => {
-    // Spring Bootが設定しているOAuth2エンドポイントに飛ばす
     const redirectUrl = import.meta.env.VITE_GOOGLE_AUTH_URL;
+    // Spring Bootが設定しているOAuth2エンドポイントに飛ばす
     window.location.href = redirectUrl;
   };
 

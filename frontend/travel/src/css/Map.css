@@ -9,3 +9,16 @@
   margin-right: 20px;
   display: flex;
 }
+
+/* ✅ スマホ対応：地図枠を縮小 */
+@media (max-width: 768px) {
+  .map-frame {
+    width: 100%;
+    height: auto;
+  }
+
+  svg {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
