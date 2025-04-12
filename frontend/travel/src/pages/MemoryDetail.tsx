@@ -50,18 +50,23 @@ const MemoryDetail = () => {
       const blobs = await Promise.all(
         response.data.images.map(async (img: MemoryImage) => {
           const filename = img.imageUrl.split("/").pop();
-          const imageRes = await axiosClient.get(
-            `/auth/api/memories/${id}/images/${filename}`,
-            {
-              responseType: "blob",
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          return URL.createObjectURL(imageRes.data);
+          try {
+            const imageRes = await axiosClient.get(
+              `/auth/api/memories/${id}/images/${filename}`,
+              {
+                responseType: "blob",
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            return URL.createObjectURL(imageRes.data);
+          } catch (error) {
+            console.error("画像の取得に失敗:", error);
+            return null; // エラー時は null を返す
+          }
         })
       );
 
-      setImageBlobs(blobs);
+      setImageBlobs(blobs.filter((blob) => blob !== null)); // null を除外
       setCommentInputs(
         response.data.images.map((img: MemoryImage) => img.comment || "")
       );

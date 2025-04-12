@@ -1,3 +1,3 @@
 {
-  "rewrites": [{ "source": "/oauth2/redirect", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
