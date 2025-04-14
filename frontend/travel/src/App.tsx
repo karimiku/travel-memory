@@ -11,6 +11,7 @@ import MemoryDetail from "./pages/MemoryDetail";
 import AllMemories from "./pages/AllMemories";
 import Main from "./pages/Main";
 import { JSX } from "react";
+import { MemoryProvider } from "./context/MemoryContext";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const token = localStorage.getItem("token");
@@ -24,37 +25,39 @@ const OnlyGuestRoute = ({ children }: { children: JSX.Element }) => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        {/* ログイン系 */}
-        <Route
-          path="/"
-          element={
-            <OnlyGuestRoute>
-              <AuthForm />
-            </OnlyGuestRoute>
-          }
-        />
-        <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
+    <MemoryProvider>
+      <Router>
+        <Routes>
+          {/* ログイン系 */}
+          <Route
+            path="/"
+            element={
+              <OnlyGuestRoute>
+                <AuthForm />
+              </OnlyGuestRoute>
+            }
+          />
+          <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
 
-        {/* ログイン後の画面 */}
-        <Route path="/main" element={<PrivateRoute element={<Main />} />} />
-        <Route
-          path="/memories/:id"
-          element={<PrivateRoute element={<MemoryDetail />} />}
-        />
-        <Route
-          path="/allMemories"
-          element={<PrivateRoute element={<AllMemories />} />}
-        />
+          {/* ログイン後の画面 */}
+          <Route path="/main" element={<PrivateRoute element={<Main />} />} />
+          <Route
+            path="/memories/:id"
+            element={<PrivateRoute element={<MemoryDetail />} />}
+          />
+          <Route
+            path="/allMemories"
+            element={<PrivateRoute element={<AllMemories />} />}
+          />
 
-        {/* ローディング画面 */}
-        <Route path="/loading" element={<Loading />} />
+          {/* ローディング画面 */}
+          <Route path="/loading" element={<Loading />} />
 
-        {/* その他は全部トップに */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          {/* その他は全部トップに */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </MemoryProvider>
   );
 };
 

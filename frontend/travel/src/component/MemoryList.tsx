@@ -1,27 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMemoryContext } from "../context/MemoryContext";
 import "../css/MemoryList.css";
-import axiosClient from "../lib/axiosClient";
 
-interface MemoryResponse {
-  id: number;
-  title: string;
-  prefecture: string;
-  date: string;
-  description: string;
-  imageUrls: string[];
-}
+const CARD_WIDTH = 216;
+const INTERVAL = 3000;
 
-type Props = {
-  refreshKey: number;
-};
-
-const MemoryList = ({ refreshKey }: Props) => {
-  const [memories, setMemories] = useState<MemoryResponse[]>([]);
+const MemoryList = () => {
+  const { memories } = useMemoryContext(); // ← ここ！
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const CARD_WIDTH = 216;
-  const INTERVAL = 3000;
 
   const scrollOneCard = (direction: "left" | "right") => {
     const el = scrollRef.current;
@@ -29,22 +17,6 @@ const MemoryList = ({ refreshKey }: Props) => {
     const amount = direction === "right" ? CARD_WIDTH : -CARD_WIDTH;
     el.scrollBy({ left: amount, behavior: "smooth" });
   };
-
-  const fetchMemories = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axiosClient.get("/auth/api/memories", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMemories(response.data);
-    } catch (error) {
-      console.error("思い出の取得に失敗しました:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchMemories();
-  }, [refreshKey]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -71,7 +43,7 @@ const MemoryList = ({ refreshKey }: Props) => {
         {"<"}
       </button>
       <div className="memory-carousel" ref={scrollRef}>
-        {[...memories].map((memory, index) => (
+        {memories.map((memory, index) => (
           <div key={`${memory.id}-${index}`} className="memory-card">
             <button
               className="memory-card-button"
@@ -96,4 +68,4 @@ const MemoryList = ({ refreshKey }: Props) => {
   );
 };
 
-export default MemoryList;
+export default React.memo(MemoryList);

@@ -6,6 +6,8 @@ import Header from "../component/Header";
 import MemoryList from "../component/MemoryList";
 import MemoryEdit from "../component/MemoryEdit";
 import "../css/MemoryDetail.css";
+import { useMemoryContext } from "../context/MemoryContext"; // 追加！
+
 interface MemoryImage {
   id: number;
   imageUrl: string;
@@ -28,6 +30,7 @@ const MemoryDetail = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
+  const { fetchMemories } = useMemoryContext(); // ← Contextの更新用関数
 
   const [memory, setMemory] = useState<Memory | null>(null);
   const [imageBlobs, setImageBlobs] = useState<string[]>([]);
@@ -61,12 +64,12 @@ const MemoryDetail = () => {
             return URL.createObjectURL(imageRes.data);
           } catch (error) {
             console.error("画像の取得に失敗:", error);
-            return null; // エラー時は null を返す
+            return null;
           }
         })
       );
 
-      setImageBlobs(blobs.filter((blob) => blob !== null)); // null を除外
+      setImageBlobs(blobs.filter((blob) => blob !== null) as string[]);
       setCommentInputs(
         response.data.images.map((img: MemoryImage) => img.comment || "")
       );
@@ -81,9 +84,10 @@ const MemoryDetail = () => {
 
   const handleEditToggle = () => setIsMemoryEditing(true);
 
-  const handleUpdated = () => {
+  const handleUpdated = async () => {
     setIsMemoryEditing(false);
-    fetchMemoryWithImages();
+    await fetchMemoryWithImages();
+    await fetchMemories(); // ← グローバルにも反映
     triggerToast("思い出を更新しました！");
   };
 
@@ -92,23 +96,20 @@ const MemoryDetail = () => {
     const imageId = memory?.images[index].id;
     const comment = commentInputs[index];
     const beforeComment = memory?.images[index].comment ?? "";
-    // コメントが変更されていなければ終了（編集モードだけ解除
+
     try {
       await axiosClient.post(
         `/auth/api/memories/${id}/images/${imageId}/comment`,
         { comment },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // 更新完了後に再取得
       await fetchMemoryWithImages();
+      await fetchMemories(); // ← コメント更新後にも反映！
       setEditingIndex(null);
 
-      // 状態に応じてメッセージを切り替え
       if (beforeComment === "" && comment !== "") {
         triggerToast("コメントを追加しました！");
       } else if (beforeComment !== "" && comment === "") {
@@ -119,7 +120,7 @@ const MemoryDetail = () => {
     } catch (error) {
       console.error("コメントの保存に失敗:", error);
       triggerToast("コメントの保存に失敗しました。");
-      setEditingIndex(null); // 失敗時も解除しておくと安心
+      setEditingIndex(null);
     }
   };
 
@@ -130,6 +131,7 @@ const MemoryDetail = () => {
       await axiosClient.delete(`/auth/api/memories/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      await fetchMemories(); // ← 削除後も反映！
       navigate("/main");
     } catch (error) {
       console.error("削除に失敗:", error);
@@ -143,7 +145,8 @@ const MemoryDetail = () => {
       await axiosClient.delete(`/auth/api/memories/${id}/images/${imageId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchMemoryWithImages();
+      await fetchMemoryWithImages();
+      await fetchMemories(); // ← 画像削除後にも反映！
       triggerToast("画像を削除しました！");
     } catch (error) {
       console.error("画像の削除に失敗:", error);
@@ -161,9 +164,8 @@ const MemoryDetail = () => {
   return (
     <div className="main-wrapper">
       <Header />
-      <MemoryList refreshKey={0} />
+      <MemoryList />
       <div className="memory-detail-container">
-        {/* <Map refreshKey={0} /> */}
         <div className="memory-detail-body">
           <div className="memory-left">
             {isMemoryEditing ? (
@@ -199,11 +201,6 @@ const MemoryDetail = () => {
                       type="button"
                       className="memory-comment"
                       onClick={() => setEditingIndex(index)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          setEditingIndex(index);
-                        }
-                      }}
                     >
                       {editingIndex === index ? (
                         <textarea
@@ -212,15 +209,9 @@ const MemoryDetail = () => {
                             const updated = [...commentInputs];
                             updated[index] = e.target.value;
                             setCommentInputs(updated);
-                            adjustTextareaHeight(
-                              e.target as HTMLTextAreaElement
-                            );
+                            adjustTextareaHeight(e.target);
                           }}
-                          onFocus={(e) => {
-                            adjustTextareaHeight(
-                              e.target as HTMLTextAreaElement
-                            );
-                          }}
+                          onFocus={(e) => adjustTextareaHeight(e.target)}
                           onBlur={() => handleCommentSave(index)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {

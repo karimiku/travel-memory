@@ -1,49 +1,23 @@
-import { useState, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import japanData from "../data/japan.json";
 import "../css/Map.css";
 import japaneseToEnglishMap from "../data/japaneseToEnglishMap";
 import englishToJapaneseMap from "../data/englishToJapaneseMap";
-import axiosClient from "../lib/axiosClient";
+import { useMemoryContext } from "../context/MemoryContext";
 
-interface MemoryPrefectureResponse {
-  prefecture: string;
-}
-
-type Props = {
-  refreshKey: number;
-};
-
-const Map = ({ refreshKey }: Props) => {
+const Map = () => {
   const navigate = useNavigate();
-  const [prefectures, setPrefectures] = useState<MemoryPrefectureResponse[]>(
-    []
-  );
+  const { visitedPrefectures } = useMemoryContext();
 
-  const visitedPrefectures = useMemo(() => {
-    return prefectures
-      .map((p) => japaneseToEnglishMap[p.prefecture])
+  // 日本語都道府県名 → 英語名への変換
+  const visited = useMemo(() => {
+    const result = visitedPrefectures
+      .map((jp) => japaneseToEnglishMap[jp])
       .filter((name): name is string => !!name);
-  }, [prefectures]);
-
-  useEffect(() => {
-    const fetchPrefectures = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axiosClient.get(
-          "/auth/api/memories/prefectures",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setPrefectures(response.data);
-      } catch (error) {
-        console.error("思い出の取得に失敗しました:", error);
-      }
-    };
-    fetchPrefectures();
-  }, [refreshKey]);
+    return result;
+  }, [visitedPrefectures]);
 
   return (
     <div className="map-frame">
@@ -56,9 +30,7 @@ const Map = ({ refreshKey }: Props) => {
         <Geographies geography={japanData}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const isVisited = visitedPrefectures.includes(
-                geo.properties.name
-              );
+              const isVisited = visited.includes(geo.properties.name);
               return (
                 <Geography
                   key={geo.rsmKey}
@@ -103,4 +75,4 @@ const Map = ({ refreshKey }: Props) => {
   );
 };
 
-export default Map;
+export default React.memo(Map);

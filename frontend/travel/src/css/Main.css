@@ -23,21 +23,13 @@ body#main {
   display: flex;
 }
 
-/* ===== スマホ用レイアウト（768px以下） ===== */
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column; /* 横並び → 縦並びに */
-    height: auto; /* 高さを自動に */
-  }
-
-  .map-section {
-    width: 100%;
-    max-width: 100vw;
-    overflow: hidden;
-  }
-
-  .create-form {
-    width: 100%;
-    flex-direction: column;
-  }
+/* Main.css */
+/* Main.css や MemoryList.css に */
+.placeholder {
+  height: 250px; /* MemoryListと同じ高さに調整 */
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
 }
