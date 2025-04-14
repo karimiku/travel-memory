@@ -40,7 +40,8 @@
 ---
 
 ## 📸 スクリーンショット
-（必要なら画像をここに貼ってもOK）
+<img width="1502" alt="スクリーンショット 2025-04-14 10 50 53" src="https://github.com/user-attachments/assets/8e10dd1a-c80f-4301-960f-4199bb1502bb" />
+
 
 ---
 
