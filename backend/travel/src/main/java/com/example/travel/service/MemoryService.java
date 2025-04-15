@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -18,7 +17,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.travel.dto.MemoryPrefectureResponse;
 import com.example.travel.dto.MemoryRequest;
 import com.example.travel.dto.MemoryResponse;
 import com.example.travel.entity.AppUser;
@@ -89,13 +87,6 @@ public class MemoryService {
     List<Memory> memories = memoryRepository.findAllWithImagesByUserId(
         user.getId());
     return memories.stream().map(MemoryResponse::fromEntity).toList();
-  }
-
-  public MemoryResponse getMemoryById(Long id) {
-    Memory memory = memoryRepository
-        .findById(id)
-        .orElseThrow(() -> new RuntimeException("指定された思い出が見つかりません"));
-    return MemoryResponse.fromEntity(memory);
   }
 
   public Resource getMemoryImage(Long memoryId, String filename) {
@@ -229,18 +220,6 @@ public class MemoryService {
     memoryImageRepository.save(image);
 
     return MemoryResponse.fromEntity(memory);
-  }
-
-  public List<MemoryPrefectureResponse> getUserMemoryPrefectures() {
-    AppUser user = getAuthenticatedUser();
-    List<Memory> memories = memoryRepository.findByUserId(user.getId());
-    return memories.stream()
-        .map(memory -> {
-          MemoryPrefectureResponse response = new MemoryPrefectureResponse();
-          response.setPrefecture(memory.getPrefecture());
-          return response;
-        })
-        .collect(Collectors.toList());
   }
 
   public void deleteImageFromMemory(Long memoryId, Long imageId) {

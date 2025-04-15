@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useToast } from "../hooks/useToast";
-import { useMemoryContext } from "../context/MemoryContext";
 import axiosClient from "../lib/axiosClient";
 import "../css/MemoryCreate.css";
 import "../css/Toast.css";
 
-const MemoryCreate = () => {
+type MemoryCreateProps = {
+  onCreated: () => void;
+};
+const MemoryCreate = ({ onCreated }: MemoryCreateProps) => {
   const [title, setTitle] = useState("");
   const [prefecture, setPrefecture] = useState("");
   const [date, setDate] = useState("");
@@ -13,7 +15,6 @@ const MemoryCreate = () => {
   const [files, setFiles] = useState<File[]>([]);
 
   const { triggerToast, Toast } = useToast();
-  const { fetchMemories } = useMemoryContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +36,7 @@ const MemoryCreate = () => {
       });
 
       triggerToast("思い出が登録されました！");
-      fetchMemories(); // ⬅️ ここで即時反映！
-
+      onCreated();
       // フォーム初期化
       setTitle("");
       setPrefecture("");
@@ -150,4 +150,4 @@ const MemoryCreate = () => {
   );
 };
 
-export default React.memo(MemoryCreate);
+export default MemoryCreate;

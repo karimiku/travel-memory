@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.travel.dto.MemoryImageCommentRequest;
-import com.example.travel.dto.MemoryPrefectureResponse;
 import com.example.travel.dto.MemoryRequest;
 import com.example.travel.dto.MemoryResponse;
 import com.example.travel.service.MemoryService;
@@ -57,12 +56,6 @@ public class MemoryController {
         description,
         images);
     return ResponseEntity.ok("思い出が保存されました！");
-  }
-
-  // ✅ 特定の思い出取得
-  @GetMapping("/{id}")
-  public ResponseEntity<MemoryResponse> getMemoryById(@PathVariable Long id) {
-    return ResponseEntity.ok(memoryService.getMemoryById(id));
   }
 
   // ✅ 思い出更新（画像除く）
@@ -110,12 +103,6 @@ public class MemoryController {
         imageId,
         request.getComment());
     return ResponseEntity.ok(updated);
-  }
-
-  @GetMapping("/prefectures")
-  public ResponseEntity<List<MemoryPrefectureResponse>> getUserMemoryPrefectures() {
-    List<MemoryPrefectureResponse> prefectures = memoryService.getUserMemoryPrefectures();
-    return ResponseEntity.ok(prefectures);
   }
 
   @DeleteMapping("/{memoryId}/images/{imageId}")

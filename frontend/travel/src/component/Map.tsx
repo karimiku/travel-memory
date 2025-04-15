@@ -5,11 +5,12 @@ import japanData from "../data/japan.json";
 import "../css/Map.css";
 import japaneseToEnglishMap from "../data/japaneseToEnglishMap";
 import englishToJapaneseMap from "../data/englishToJapaneseMap";
-import { useMemoryContext } from "../context/MemoryContext";
 
-const Map = () => {
+type Props = {
+  visitedPrefectures: string[];
+};
+const Map = ({ visitedPrefectures }: Props) => {
   const navigate = useNavigate();
-  const { visitedPrefectures } = useMemoryContext();
 
   // 日本語都道府県名 → 英語名への変換
   const visited = useMemo(() => {

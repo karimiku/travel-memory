@@ -17,7 +17,7 @@ body#memory-detail {
   display: flex;
   max-width: 1300px;
   height: 700px;
-  margin: 0 auto;
+  margin: 20px auto;
   background-color: #fffdf8;
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

@@ -1,13 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMemoryContext } from "../context/MemoryContext";
+import { BaseMemory } from "../types/Memory";
 import "../css/MemoryList.css";
 
 const CARD_WIDTH = 216;
 const INTERVAL = 3000;
 
-const MemoryList = () => {
-  const { memories } = useMemoryContext(); // ← ここ！
+interface Props {
+  memories: BaseMemory[];
+}
+
+const MemoryList = ({ memories }: Props) => {
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -68,4 +71,4 @@ const MemoryList = () => {
   );
 };
 
-export default React.memo(MemoryList);
+export default MemoryList;

@@ -6,56 +6,41 @@ import Header from "../component/Header";
 import MemoryList from "../component/MemoryList";
 import MemoryEdit from "../component/MemoryEdit";
 import "../css/MemoryDetail.css";
-import { useMemoryContext } from "../context/MemoryContext"; // 追加！
-
-interface MemoryImage {
-  id: number;
-  imageUrl: string;
-  comment: string | null;
-}
-
-interface Memory {
-  id: number;
-  title: string;
-  prefecture: string;
-  date: string;
-  description: string;
-  images: MemoryImage[];
-}
+import { useMemoryContext } from "../context/MemoryContext";
 
 const MemoryDetail = () => {
   useEffect(() => {
     document.body.id = "memory-detail";
   }, []);
-
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { fetchMemories } = useMemoryContext(); // ← Contextの更新用関数
+  const { memories, fetchMemories } = useMemoryContext();
+  const { triggerToast, Toast } = useToast();
 
-  const [memory, setMemory] = useState<Memory | null>(null);
+  const navigate = useNavigate();
+
+  // ✅ memory取得はnull fallbackに変更
+  const memory = memories.find((m) => m.id.toString() === id) || null;
+
   const [imageBlobs, setImageBlobs] = useState<string[]>([]);
   const [isMemoryEditing, setIsMemoryEditing] = useState(false);
   const [commentInputs, setCommentInputs] = useState<string[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [modalImage, setModalImage] = useState<string | null>(null);
 
-  const { triggerToast, Toast } = useToast();
+  const fetchMemoryOnlyImages = async () => {
+    if (!memory || !memory.images) return;
 
-  const fetchMemoryWithImages = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axiosClient.get(`/auth/api/memories/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setMemory(response.data);
 
       const blobs = await Promise.all(
-        response.data.images.map(async (img: MemoryImage) => {
-          const filename = img.imageUrl.split("/").pop();
+        memory.images.map(async (img) => {
+          const filename = img.imageUrl?.split("/").pop();
+          if (!filename) return null;
+
           try {
             const imageRes = await axiosClient.get(
-              `/auth/api/memories/${id}/images/${filename}`,
+              `/auth/api/memories/${memory.id}/images/${filename}`,
               {
                 responseType: "blob",
                 headers: { Authorization: `Bearer ${token}` },
@@ -69,25 +54,22 @@ const MemoryDetail = () => {
         })
       );
 
-      setImageBlobs(blobs.filter((blob) => blob !== null) as string[]);
-      setCommentInputs(
-        response.data.images.map((img: MemoryImage) => img.comment || "")
-      );
+      setImageBlobs(blobs.filter((blob): blob is string => blob !== null));
+      setCommentInputs(memory.images.map((img) => img.comment || ""));
     } catch (error) {
-      console.error("データの取得に失敗:", error);
+      console.error("画像取得中にエラー:", error);
     }
   };
 
   useEffect(() => {
-    fetchMemoryWithImages();
-  }, [id]);
+    fetchMemoryOnlyImages();
+  }, [id, memory]);
 
   const handleEditToggle = () => setIsMemoryEditing(true);
 
   const handleUpdated = async () => {
     setIsMemoryEditing(false);
-    await fetchMemoryWithImages();
-    await fetchMemories(); // ← グローバルにも反映
+    await fetchMemories();
     triggerToast("思い出を更新しました！");
   };
 
@@ -105,9 +87,7 @@ const MemoryDetail = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      await fetchMemoryWithImages();
-      await fetchMemories(); // ← コメント更新後にも反映！
+      await fetchMemories();
       setEditingIndex(null);
 
       if (beforeComment === "" && comment !== "") {
@@ -131,8 +111,10 @@ const MemoryDetail = () => {
       await axiosClient.delete(`/auth/api/memories/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      await fetchMemories(); // ← 削除後も反映！
-      navigate("/main");
+      await fetchMemories();
+      navigate("/main", {
+        state: { toast: "思い出を削除しました！" },
+      });
     } catch (error) {
       console.error("削除に失敗:", error);
       triggerToast("削除に失敗しました。");
@@ -145,8 +127,7 @@ const MemoryDetail = () => {
       await axiosClient.delete(`/auth/api/memories/${id}/images/${imageId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      await fetchMemoryWithImages();
-      await fetchMemories(); // ← 画像削除後にも反映！
+      fetchMemories();
       triggerToast("画像を削除しました！");
     } catch (error) {
       console.error("画像の削除に失敗:", error);
@@ -164,7 +145,7 @@ const MemoryDetail = () => {
   return (
     <div className="main-wrapper">
       <Header />
-      <MemoryList />
+      <MemoryList memories={memories} />
       <div className="memory-detail-container">
         <div className="memory-detail-body">
           <div className="memory-left">

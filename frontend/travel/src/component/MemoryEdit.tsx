@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
-import { useToast } from "../hooks/useToast";
 import axiosClient from "../lib/axiosClient";
+import { BaseMemory } from "../types/Memory";
 import "../css/MemoryEdit.css";
 
-interface MemoryRequest {
-  id: number;
-  title: string;
-  prefecture: string;
-  date: string;
-  description: string;
-}
-
 type Props = {
-  memory: MemoryRequest;
+  memory: BaseMemory;
   onCancel: () => void;
   onUpdated: () => void;
   triggerToast: (msg: string) => void;
