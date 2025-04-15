@@ -26,24 +26,15 @@ const MemoryEdit = ({ memory, onCancel, onUpdated, triggerToast }: Props) => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
 
     // ① テキスト部分の更新（PUT）
     try {
-      await axiosClient.put(
-        `/auth/api/memories/${memory.id}`,
-        {
-          title,
-          prefecture,
-          date,
-          description,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axiosClient.put(`/auth/api/memories/${memory.id}`, {
+        title,
+        prefecture,
+        date,
+        description,
+      });
     } catch (error) {
       console.error("基本情報の更新に失敗しました:", error);
       triggerToast("更新に失敗しました。");
@@ -61,7 +52,6 @@ const MemoryEdit = ({ memory, onCancel, onUpdated, triggerToast }: Props) => {
           formData,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
           }

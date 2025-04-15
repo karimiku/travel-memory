@@ -31,8 +31,6 @@ const MemoryDetail = () => {
     if (!memory || !memory.images) return;
 
     try {
-      const token = localStorage.getItem("token");
-
       const blobs = await Promise.all(
         memory.images.map(async (img) => {
           const filename = img.imageUrl?.split("/").pop();
@@ -43,7 +41,6 @@ const MemoryDetail = () => {
               `/auth/api/memories/${memory.id}/images/${filename}`,
               {
                 responseType: "blob",
-                headers: { Authorization: `Bearer ${token}` },
               }
             );
             return URL.createObjectURL(imageRes.data);
@@ -74,7 +71,6 @@ const MemoryDetail = () => {
   };
 
   const handleCommentSave = async (index: number) => {
-    const token = localStorage.getItem("token");
     const imageId = memory?.images[index].id;
     const comment = commentInputs[index];
     const beforeComment = memory?.images[index].comment ?? "";
@@ -82,10 +78,7 @@ const MemoryDetail = () => {
     try {
       await axiosClient.post(
         `/auth/api/memories/${id}/images/${imageId}/comment`,
-        { comment },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { comment }
       );
       await fetchMemories();
       setEditingIndex(null);
@@ -107,10 +100,7 @@ const MemoryDetail = () => {
   const handleDeleteMemory = async () => {
     if (!window.confirm("本当に削除しますか？")) return;
     try {
-      const token = localStorage.getItem("token");
-      await axiosClient.delete(`/auth/api/memories/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosClient.delete(`/auth/api/memories/${id}`);
       await fetchMemories();
       navigate("/main", {
         state: { toast: "思い出を削除しました！" },
@@ -123,10 +113,7 @@ const MemoryDetail = () => {
 
   const handleDeleteImage = async (imageId: number) => {
     try {
-      const token = localStorage.getItem("token");
-      await axiosClient.delete(`/auth/api/memories/${id}/images/${imageId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosClient.delete(`/auth/api/memories/${id}/images/${imageId}`);
       fetchMemories();
       triggerToast("画像を削除しました！");
     } catch (error) {

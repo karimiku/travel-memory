@@ -18,7 +18,6 @@ const MemoryCreate = ({ onCreated }: MemoryCreateProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
 
     const formData = new FormData();
     formData.append("title", title);
@@ -30,7 +29,6 @@ const MemoryCreate = ({ onCreated }: MemoryCreateProps) => {
     try {
       await axiosClient.post("/auth/api/memories", formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });

@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import Header from "../component/Header";
 import "../css/AllMemories.css";
-import axiosClient from "../lib/axiosClient";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMemoryContext } from "../context/MemoryContext";
 
