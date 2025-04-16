@@ -22,14 +22,3 @@ body#main {
 .create-form {
   display: flex;
 }
-
-/* Main.css */
-/* Main.css や MemoryList.css に */
-.placeholder {
-  height: 250px; /* MemoryListと同じ高さに調整 */
-  background-color: #f9f9f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #999;
-}

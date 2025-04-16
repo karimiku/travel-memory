@@ -10,10 +10,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +35,9 @@ public class MemoryService {
   private UserRepository userRepository;
 
   @Autowired
+  private AuthService authService;
+
+  @Autowired
   private ImageService imageService;
 
   public MemoryResponse createMemoryWithImages(
@@ -47,7 +46,7 @@ public class MemoryService {
       LocalDate date,
       String description,
       List<MultipartFile> imageFiles) {
-    AppUser user = getAuthenticatedUser();
+    AppUser user = authService.getAuthenticatedUser();
 
     Memory memory = new Memory();
     memory.setTitle(title);
@@ -83,14 +82,14 @@ public class MemoryService {
   }
 
   public List<MemoryResponse> getAllMemories() {
-    AppUser user = getAuthenticatedUser();
+    AppUser user = authService.getAuthenticatedUser();
     List<Memory> memories = memoryRepository.findAllWithImagesByUserId(
         user.getId());
     return memories.stream().map(MemoryResponse::fromEntity).toList();
   }
 
   public Resource getMemoryImage(Long memoryId, String filename) {
-    AppUser user = getAuthenticatedUser();
+    AppUser user = authService.getAuthenticatedUser();
 
     Memory memory = memoryRepository
         .findById(memoryId)
@@ -111,7 +110,7 @@ public class MemoryService {
   public MemoryResponse addImagesToMemory(
       Long memoryId,
       List<MultipartFile> imageFiles) {
-    AppUser user = getAuthenticatedUser();
+    AppUser user = authService.getAuthenticatedUser();
 
     Memory memory = memoryRepository
         .findById(memoryId)
@@ -160,7 +159,7 @@ public class MemoryService {
   }
 
   public MemoryResponse updateMemory(Long memoryId, MemoryRequest dto) {
-    AppUser user = getAuthenticatedUser();
+    AppUser user = authService.getAuthenticatedUser();
     Memory memory = memoryRepository
         .findById(memoryId)
         .orElseThrow(() -> new RuntimeException("指定されたIDのMemoryが見つかりません"));
@@ -178,30 +177,11 @@ public class MemoryService {
     return MemoryResponse.fromEntity(updatedMemory);
   }
 
-  private AppUser getAuthenticatedUser() {
-    Authentication auth = SecurityContextHolder.getContext()
-        .getAuthentication();
-    Object principal = auth.getPrincipal();
-    String email;
-
-    if (principal instanceof OAuth2User oAuth2User) {
-      email = oAuth2User.getAttribute("email");
-    } else if (principal instanceof User userDetails) {
-      email = userDetails.getUsername();
-    } else {
-      throw new RuntimeException("ユーザー情報が取得できません。");
-    }
-
-    return userRepository
-        .findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません"));
-  }
-
   public MemoryResponse addCommentToImage(
       Long memoryId,
       Long imageId,
       String comment) {
-    AppUser user = getAuthenticatedUser();
+    AppUser user = authService.getAuthenticatedUser();
 
     Memory memory = memoryRepository
         .findById(memoryId)
@@ -223,7 +203,7 @@ public class MemoryService {
   }
 
   public void deleteImageFromMemory(Long memoryId, Long imageId) {
-    AppUser user = getAuthenticatedUser();
+    AppUser user = authService.getAuthenticatedUser();
 
     Memory memory = memoryRepository.findById(memoryId)
         .orElseThrow(() -> new RuntimeException("指定された思い出が見つかりません"));
@@ -238,4 +218,5 @@ public class MemoryService {
     imageService.deleteImage(filename);
     memoryImageRepository.delete(image);
   }
+
 }
