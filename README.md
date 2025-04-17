@@ -28,7 +28,7 @@
 ### フロントエンド
 
 - React + TypeScript + Vite
-- 状態管理：useState / useEffect
+- 状態管理：useState / useContext
 - CSS
 
 ### バックエンド
