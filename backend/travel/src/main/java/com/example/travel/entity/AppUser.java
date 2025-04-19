@@ -9,11 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,4 +31,37 @@ public class AppUser {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private AuthProvider authProvider; // 通常, GOOGLE, APPLE など
+
+  // ゲッターとセッター
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public AuthProvider getAuthProvider() {
+    return authProvider;
+  }
+
+  public void setAuthProvider(AuthProvider authProvider) {
+    this.authProvider = authProvider;
+  }
 }
